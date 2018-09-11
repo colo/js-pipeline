@@ -171,6 +171,16 @@ module.exports = new Class({
 						/**
 						 * DOCS from poll to Poller
 						 * */
+						poll.addEvent(poll.ON_DOC, function(doc, options){
+ 							debug_events('poll.ON_DOC %o', arguments);
+ 							this.fireEvent(this.ON_DOC, [doc, options]);
+ 						}.bind(this));
+
+ 						poll.addEvent(poll.ON_DOC_ERROR, function(doc, options){
+ 							debug_events('poll.ON_DOC_ERROR %o', arguments);
+ 							this.fireEvent(this.ON_DOC_ERROR, [doc, options]);
+ 						}.bind(this));
+
 						poll.addEvent(poll.ON_ONCE_DOC, function(doc, options){
 							debug_events('poll.ON_ONCE_DOC %o', arguments);
 							this.fireEvent(this.ON_ONCE_DOC, [doc, options]);
@@ -323,6 +333,15 @@ module.exports = new Class({
 							/**
 							 * DOCS from app to poll
 							 * */
+							 app.addEvent(app.ON_DOC, function(doc){
+ 								debug_eventsg('app.ON_DOC %o', arguments);
+ 								poll.fireEvent(poll.ON_DOC, [doc, {type: 'doc', input_type: poll, app: app}]);
+ 							}.bind(this));
+
+ 							app.addEvent(app.ON_DOC_ERROR, function(doc){
+ 								debug_events('app.ON_DOC_ERROR %o', arguments);
+ 								poll.fireEvent(poll.ON_DOC_ERROR, [doc, {type: 'doc', input_type: poll, app: app}]);
+ 							}.bind(this));
 							app.addEvent(app.ON_ONCE_DOC, function(doc){
 								debug_events('app.ON_ONCE_DOC %o', doc);
 								poll.fireEvent(poll.ON_ONCE_DOC, [doc, {type: 'once', input_type: poll, app: app}]);
