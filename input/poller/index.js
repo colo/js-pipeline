@@ -141,6 +141,10 @@ module.exports = new Class({
 
 						poll = new Poll(poller);
 
+						poll['ON_EXIT'] = this.ON_EXIT;
+						poll['ON_SUSPEND'] = this.ON_SUSPEND;
+						poll['ON_RESUME'] = this.ON_RESUME;
+
 						poll['ON_DOC'] = this.ON_DOC;
 						poll['ON_DOC_ERROR'] = this.ON_DOC_ERROR;
 
@@ -158,6 +162,21 @@ module.exports = new Class({
 
 						poll['ON_PERIODICAL_REQUESTS_UPDATED'] = this.ON_PERIODICAL_REQUESTS_UPDATED;
 
+						this.addEvent(this.ON_EXIT, function(req){
+							console.log('ON_EXIT %o', req);
+							poll.fireEvent(poll.ON_EXIT, req);
+						}.bind(this));
+
+						this.addEvent(this.ON_SUSPEND, function(req){
+							debug_events('ON_SUSPEND %o', req);
+							poll.fireEvent(poll.ON_SUSPEND, req);
+						}.bind(this));
+
+						this.addEvent(this.ON_RESUME, function(req){
+							debug_events('ON_RESUME %o', req);
+							poll.fireEvent(poll.ON_RESUME, req);
+						}.bind(this));
+
 						this.addEvent(this.ON_ONCE, function(req){
 							debug_events('ON_ONCE %o', req);
 							poll.fireEvent(poll.ON_ONCE, req);
@@ -169,8 +188,22 @@ module.exports = new Class({
 						}.bind(this));
 
 						/**
-						 * DOCS from poll to Poller
+						 * Events from poll to Poller
 						 * */
+
+					 	// poll.addEvent(poll.ON_EXIT, function(){
+						// 	debug_events('poll.ON_EXIT %o', arguments);
+						// 	this.fireEvent(this.ON_EXIT, [arguments]);
+						// }.bind(this));
+						// poll.addEvent(poll.ON_SUSPEND, function(doc, options){
+ 						// 	debug_events('poll.ON_SUSPEND %o', arguments);
+ 						// 	this.fireEvent(this.ON_SUSPEND, [doc, options]);
+ 						// }.bind(this));
+						// poll.addEvent(poll.ON_RESUME, function(doc, options){
+ 						// 	debug_events('poll.ON_RESUME %o', arguments);
+ 						// 	this.fireEvent(this.ON_RESUME, [doc, options]);
+ 						// }.bind(this));
+
 						poll.addEvent(poll.ON_DOC, function(doc, options){
  							debug_events('poll.ON_DOC %o', arguments);
  							this.fireEvent(this.ON_DOC, [doc, options]);
@@ -254,6 +287,16 @@ module.exports = new Class({
 						poll.addEvent(poll.ON_USE, function(mount, app){
 							debug_events('poll.ON_USE %o', app);
 
+
+							app['ON_EXIT'] = this.ON_EXIT;
+							poll.addEvent(poll.ON_EXIT, function(){
+								debug_events('poll.ON_EXIT %o', arguments);
+								app.fireEvent(this.ON_EXIT, [arguments]);
+							}.bind(this));
+
+							// app['ON_RESUME'] = this.ON_RESUME;
+							// app['ON_SUSPEND'] = this.ON_SUSPEND;
+
 							app['ON_DOC'] = this.ON_DOC;
 							app['ON_DOC_ERROR'] = this.ON_DOC_ERROR;
 
@@ -274,6 +317,20 @@ module.exports = new Class({
 							/**
 							 * app can fire ON_ONCE and ON_RANGE events
 							 * */
+
+						 	// app.addEvent(app.ON_EXIT, function(req){
+ 							// 	debug_events('app.ON_EXIT %o', req);
+ 							// 	poll.fireEvent(poll.ON_EXIT, req);
+ 							// }.bind(this));
+							// app.addEvent(app.ON_RESUME, function(req){
+							// 	debug_events('app.ON_RESUME %o', req);
+							// 	poll.fireEvent(poll.ON_RESUME, req);
+							// }.bind(this));
+							// app.addEvent(app.ON_SUSPEND, function(req){
+							// 	debug_events('app.ON_SUSPEND %o', req);
+							// 	poll.fireEvent(poll.ON_SUSPEND, req);
+							// }.bind(this));
+
 							app.addEvent(app.ON_ONCE, function(req){
 								debug_events('app.ON_ONCE %o', req);
 								poll.fireEvent(poll.ON_ONCE, req);
