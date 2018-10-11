@@ -493,8 +493,8 @@ module.exports = new Class({
 						////////console.log('TYPE');
 						////////console.log(type);
 						//dispatch_app[verb](data);
-
-						this.dispatch(null, app, app_req, type);
+						if(this.options.suspended == false)
+							this.dispatch(null, app, app_req, type);
 
 						poll.addEvent(poll.ON_ONCE, function(req){
 							debug_events('poll.ON_ONCE %o', req);
