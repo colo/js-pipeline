@@ -159,7 +159,7 @@ module.exports = new Class({
       // let table = this.options.conn[index].table
       let db = this.options.conn[index].db
       let table = this.options.conn[index].table
-      
+
 
       try{
         this.r.dbList().run(conn, function(dbs){
@@ -204,36 +204,38 @@ module.exports = new Class({
     let table = this.options.conn[index].table
     let conn = this.conns[index]
 
-
-      this.r.db(db).tableList().run(conn, function(tables){
-
-        let exist = false
-
-        console.log(db, table, tables, exist)
-
-        Array.each(tables, function(t){
-          if(t == table)
-            exist = true
-        }.bind(this))
-
-
-
-        if(exist === false){
-          try{
-            this.r.db(db).tableCreate(table).run(conn, function(result){
-              this.r.db(db).table(table).insert(doc).run(conn, function(result){
-                // debug_internals('insert result %o', result);
-              })
-            }.bind(this))
-          }
-          catch(e){
-            this.r.db(db).table(table).insert(doc).run(conn, function(result){
-              // debug_internals('insert result %o', result);
-            })
-            debug_internals('tableCreate error %o', e);
-          }
-        }
-      }.bind(this))
+    this.r.db(db).table(table).insert(doc).run(conn, function(result){
+      debug_internals('insert result %o', result);
+    })
+      // this.r.db(db).tableList().run(conn, function(tables){
+      //
+      //   let exist = false
+      //
+      //   console.log(db, table, tables, exist)
+      //
+      //   Array.each(tables, function(t){
+      //     if(t == table)
+      //       exist = true
+      //   }.bind(this))
+      //
+      //
+      //
+      //   if(exist === false){
+      //     try{
+      //       this.r.db(db).tableCreate(table).run(conn, function(result){
+      //         this.r.db(db).table(table).insert(doc).run(conn, function(result){
+      //           // debug_internals('insert result %o', result);
+      //         })
+      //       }.bind(this))
+      //     }
+      //     catch(e){
+      //       this.r.db(db).table(table).insert(doc).run(conn, function(result){
+      //         // debug_internals('insert result %o', result);
+      //       })
+      //       debug_internals('tableCreate error %o', e);
+      //     }
+      //   }
+      // }.bind(this))
 
 
 
