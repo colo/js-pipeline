@@ -230,12 +230,15 @@ module.exports = new Class({
       this.r.db(db).tableList().run(conn, function(tables){
 
         let exist = false
+
+        console.log(db, table, tables, exist)
+
         Array.each(tables, function(t){
           if(t == table)
             exist = true
         }.bind(this))
 
-        console.log(db, table, tables, exist)
+
 
         if(exist === false){
           try{
