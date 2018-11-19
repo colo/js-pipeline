@@ -161,42 +161,47 @@ module.exports = new Class({
       let db = this.options.conn[index].db
       let table = this.options.conn[index].table
 
-
-      try{
-        this.r.dbList().run(conn, function(dbs){
-          let exist = false
-          Array.each(dbs, function(d){
-            if(d == db)
-              exist = true
-          })
-
-          if(exist === false){
-            this.r.dbCreate(db).run(conn, function(result){
-              // this._save_docs(doc, index);
-              try{
-                this.r.db(db).tableCreate(table).run(conn, function(result){
-                  this.accept = true
-                  this._save_docs(doc, index);
-                }.bind(this))
-              }
-              catch(e){
-                this._save_docs(doc, index);
-                debug_internals('tableCreate error %o', e);
-              }
-            }.bind(this));
-          }
-          else {
-            this.accept = true
-          }
-        }.bind(this))
-
-
-      }
-      catch(e){
-        // console.log(e)
-        debug_internals('dbCreate error %o', err);
+      if(this.accept == true){
         this._save_docs(doc, index);
       }
+      else{
+        try{
+          this.r.dbList().run(conn, function(dbs){
+            let exist = false
+            Array.each(dbs, function(d){
+              if(d == db)
+                exist = true
+            })
+
+            if(exist === false){
+              this.r.dbCreate(db).run(conn, function(result){
+                // this._save_docs(doc, index);
+                try{
+                  this.r.db(db).tableCreate(table).run(conn, function(result){
+                    this.accept = true
+                    this._save_docs(doc, index);
+                  }.bind(this))
+                }
+                catch(e){
+                  this._save_docs(doc, index);
+                  debug_internals('tableCreate error %o', e);
+                }
+              }.bind(this));
+            }
+            else {
+              this.accept = true
+            }
+          }.bind(this))
+
+
+        }
+        catch(e){
+          // console.log(e)
+          debug_internals('dbCreate error %o', err);
+          this._save_docs(doc, index);
+        }
+      }
+
 
 
 
