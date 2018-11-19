@@ -225,7 +225,7 @@ module.exports = new Class({
     let db = this.options.conn[index].db
     let table = this.options.conn[index].table
     let conn = this.conns[index]
-    try{
+
       this.r.db(db).tableList().run(conn, function(tables){
         let exist = false
         Array.each(tables, function(t){
@@ -234,22 +234,25 @@ module.exports = new Class({
         }.bind(this))
 
         if(exist === false){
-          this.r.db(db).tableCreate(table).run(conn, function(result){
+          try{
+            this.r.db(db).tableCreate(table).run(conn, function(result){
+              this.r.db(db).table(table).insert(doc).run(conn, function(result){
+                debug_internals('insert result %o', result);
+              })
+            }.bind(this))
+          }
+          catch(e){
             this.r.db(db).table(table).insert(doc).run(conn, function(result){
               debug_internals('insert result %o', result);
             })
-          }.bind(this))
+            debug_internals('tableCreate error %o', e);
+          }
         }
       }.bind(this))
 
 
-    }
-    catch(e){
-      this.r.db(db).table(table).insert(doc).run(conn, function(result){
-        debug_internals('insert result %o', result);
-      })
-      debug_internals('tableCreate error %o', e);
-    }
+
+
     // if((typeof(doc) == 'array' || doc instanceof Array || Array.isArray(doc)) && doc.length > 0){
     //   try{
     //     db = this.conns[index].use(db)
