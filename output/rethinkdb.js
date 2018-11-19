@@ -161,7 +161,7 @@ module.exports = new Class({
       let db = this.options.conn[index].db
       let table = this.options.conn[index].table
 
-      if(this.accept == true){
+      if(this.accept === true){
         this._save_docs(doc, index);
       }
       else{
@@ -183,7 +183,7 @@ module.exports = new Class({
                   }.bind(this))
                 }
                 catch(e){
-                  this._save_docs(doc, index);
+                  // this._save_docs(doc, index);
                   debug_internals('tableCreate error %o', e);
                 }
               }.bind(this));
@@ -198,7 +198,7 @@ module.exports = new Class({
         catch(e){
           // console.log(e)
           debug_internals('dbCreate error %o', err);
-          this._save_docs(doc, index);
+          // this._save_docs(doc, index);
         }
       }
 
@@ -286,7 +286,7 @@ module.exports = new Class({
 	},
 	_save_buffer: function(){
 		// if(this.buffer_expire <= Date.now() && this.buffer.length > 0){
-      debug_internals('_save_buffer %o', this.buffer);
+      // debug_internals('_save_buffer %o', this.buffer);
 			// let doc = this.buffer;
 			// this._save_docs(Array.clone(this.buffer));
 
