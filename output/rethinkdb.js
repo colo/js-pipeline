@@ -22,6 +22,9 @@ module.exports = new Class({
   buffer: [],
   buffer_expire: 0,
 
+  ON_CONNECT: 'onConnect',
+  ON_CONNECT_ERROR: 'onConnectError',
+  
   ON_DOC: 'onDoc',
 	//ON_DOC_ERROR: 'onDocError',
 
@@ -67,10 +70,10 @@ module.exports = new Class({
 		debug_events('connect %o', err, conn)
 		if(err){
 			this.fireEvent(this.ON_CONNECT_ERROR, { error: err, params: params });
-			throw err
+			// throw err
 		}
 		else {
-			this.conn = conn
+			// this.conn = conn
 			this.fireEvent(this.ON_CONNECT, { conn: conn,  params: params});
 		}
 	},
