@@ -210,10 +210,17 @@ module.exports = new Class({
     let table = this.options.conn[index].table
 
     try{
-      this.r.db(db).table(table).insert(doc)
+      this.r.db(db).tableCreate(table).run(this.conns[index], function(result){
+        this.r.db(db).table(table).insert(doc).run(this.conns[index], function(result){
+          debug_internals('insert result %o', result);
+        })
+      })
     }
     catch(e){
-      debug_internals('insert error %o', err);
+      this.r.db(db).table(table).insert(doc).run(this.conns[index], function(result){
+        debug_internals('insert result %o', result);
+      })
+      debug_internals('tableCreate error %o', err);
     }
     // if((typeof(doc) == 'array' || doc instanceof Array || Array.isArray(doc)) && doc.length > 0){
     //   try{
