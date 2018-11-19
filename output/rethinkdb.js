@@ -18,6 +18,7 @@ module.exports = new Class({
   Implements: [Options, Events],
 
   // dbs: [],
+  accept: false,
   conns: [],
   buffer: [],
   buffer_expire: 0,
@@ -174,6 +175,7 @@ module.exports = new Class({
               // this._save_docs(doc, index);
               try{
                 this.r.db(db).tableCreate(table).run(conn, function(result){
+                  this.accept = true
                   this._save_docs(doc, index);
                 }.bind(this))
               }
@@ -279,10 +281,12 @@ module.exports = new Class({
       debug_internals('_save_buffer %o', this.buffer);
 			// let doc = this.buffer;
 			// this._save_docs(Array.clone(this.buffer));
-      this._save_to_dbs(Array.clone(this.buffer));
-			this.buffer = [];
-			this.buffer_expire = Date.now() + this.options.buffer.expire;
 
+      this._save_to_dbs(Array.clone(this.buffer));
+      if(this.accept === true){
+  			this.buffer = [];
+  			this.buffer_expire = Date.now() + this.options.buffer.expire;
+      }
 			// debug_internals('_save_buffer %o', doc);
 		// }
 
