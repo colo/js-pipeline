@@ -220,13 +220,12 @@ module.exports = new Class({
     }.bind(this));
   },
 	_save_docs: function(doc, index){
-		debug_events('_save_docs %o %s', index);
+		debug_internals('_save_docs %o %s', index);
 
     let db = this.options.conn[index].db
     let table = this.options.conn[index].table
     let conn = this.conns[index]
 
-    console.log(db, table)
 
       this.r.db(db).tableList().run(conn, function(tables){
 
@@ -235,6 +234,8 @@ module.exports = new Class({
           if(t == table)
             exist = true
         }.bind(this))
+
+        console.log(db, table, exist)
 
         if(exist === false){
           try{
