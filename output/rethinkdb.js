@@ -159,9 +159,21 @@ module.exports = new Class({
       // let table = this.options.conn[index].table
 
       try{
-        this.r.dbCreate(this.options.conn[index].db).run(conn, function(result){
-          this._save_docs(doc, index);
-        }.bind(this));
+        this.r.dbList().run(conn, function(dbs){
+          let exist = false
+          Array.each(dbs, function(db){
+            if(db == this.options.conn[index].db)
+              exist = true
+          })
+
+          if(exist === false){
+            this.r.dbCreate(this.options.conn[index].db).run(conn, function(result){
+              this._save_docs(doc, index);
+            }.bind(this));
+          }
+        })
+
+
 
 
         // this.r.dbList().run(conn, function(list){
@@ -214,11 +226,23 @@ module.exports = new Class({
     let table = this.options.conn[index].table
 
     try{
-      this.r.db(db).tableCreate(table).run(this.conns[index], function(result){
-        this.r.db(db).table(table).insert(doc).run(this.conns[index], function(result){
-          debug_internals('insert result %o', result);
+      this.r.db(db).tableList().run(conn, function(tables){
+        let exist = false
+        Array.each(tables, function(table){
+          if(table == this.options.conn[index].table)
+            exist = true
         })
+
+        if(exist === false){
+          this.r.db(db).tableCreate(table).run(this.conns[index], function(result){
+            this.r.db(db).table(table).insert(doc).run(this.conns[index], function(result){
+              debug_internals('insert result %o', result);
+            })
+          }.bind(this))
+        }
       }.bind(this))
+
+
     }
     catch(e){
       this.r.db(db).table(table).insert(doc).run(this.conns[index], function(result){
