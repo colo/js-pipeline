@@ -157,57 +157,35 @@ module.exports = new Class({
 
     Array.each(this.conns, function(conn, index){
       // let table = this.options.conn[index].table
+      let db = this.options.conn[index].db
+      let table = this.options.conn[index].table
+      let conn = this.conns[index]
 
       try{
         this.r.dbList().run(conn, function(dbs){
           let exist = false
-          Array.each(dbs, function(db){
-            if(db == this.options.conn[index].db)
+          Array.each(dbs, function(d){
+            if(d == db)
               exist = true
           })
 
           if(exist === false){
-            this.r.dbCreate(this.options.conn[index].db).run(conn, function(result){
-              this._save_docs(doc, index);
+            this.r.dbCreate(db).run(conn, function(result){
+              // this._save_docs(doc, index);
+              try{
+                this.r.db(db).tableCreate(table).run(conn, function(result){
+                  this._save_docs(doc, index);
+                }.bind(this))
+              }
+              catch(e){
+                this._save_docs(doc, index);
+                debug_internals('tableCreate error %o', e);
+              }
             }.bind(this));
           }
         }.bind(this))
 
 
-
-
-        // this.r.dbList().run(conn, function(list){
-        //   let exist = false
-        //   Array.each(list, function(db){
-        //     if(db == this.options.conn[index].db)
-        //       exist = true
-        //   })
-        //
-        //   if(exist === false){
-        //     this.r.dbCreate(this.options.conn[index].db).run(conn, callback);
-        //   }
-        // })
-        // conn.db.get(name, (err, data, headers) => {
-        //   if (err) {
-        //     debug_internals('db.get error %o', err);
-        //     if(err.statusCode == 404){
-        //       try{
-        //         conn.db.create(name, (err, data, headers) => {
-        //           if (err) {
-        //             debug_internals('db.create error %o', err);
-        //           }
-        //           else{
-        //             this._save_docs(doc, name);
-        //           }
-        //         })
-        //       }
-        //       catch(e){}
-        //     }
-        //   }
-        //   else {
-        //     this._save_docs(doc, index);
-        //   }
-        // })
       }
       catch(e){
         // console.log(e)
