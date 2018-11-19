@@ -220,7 +220,7 @@ module.exports = new Class({
     }.bind(this));
   },
 	_save_docs: function(doc, index){
-		debug_internals('_save_docs %o %s', doc, index);
+		debug_events('_save_docs %o %s', doc, index);
 
     let db = this.options.conn[index].db
     let table = this.options.conn[index].table
