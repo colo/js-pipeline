@@ -218,7 +218,7 @@ module.exports = new Class({
         this.r.db(db).table(table).insert(doc).run(this.conns[index], function(result){
           debug_internals('insert result %o', result);
         })
-      })
+      }.bind(this))
     }
     catch(e){
       this.r.db(db).table(table).insert(doc).run(this.conns[index], function(result){
