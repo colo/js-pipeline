@@ -76,6 +76,45 @@ module.exports = new Class({
 		else {
 			// this.conn = conn
 			this.fireEvent(this.ON_CONNECT, { conn: conn,  params: params});
+
+      try{
+        let index = params.index
+        let db = this.options.conn[index].db
+        let table = this.options.conn[index].table
+
+        this.r.dbList().run(conn, function(dbs){
+          let exist = false
+          Array.each(dbs, function(d){
+            if(d == db)
+              exist = true
+          })
+
+          if(exist === false){
+            this.r.dbCreate(db).run(conn, function(result){
+              // this._save_docs(doc, index);
+              try{
+                this.r.db(db).tableCreate(table).run(conn, function(result){
+                  this.options.conn[index].accept = true
+                }.bind(this))
+              }
+              catch(e){
+                // this._save_docs(doc, index);
+                debug_internals('tableCreate error %o', e);
+              }
+            }.bind(this));
+          }
+          else {
+            this.options.conn[index].accept = true
+          }
+        }.bind(this))
+
+
+      }
+      catch(e){
+        // console.log(e)
+        debug_internals('dbCreate error %o', err);
+        // this._save_docs(doc, index);
+      }
 		}
 	},
 	initialize: function(options, connect_cb){
@@ -102,7 +141,7 @@ module.exports = new Class({
       let _cb = function(err, conn){
         this.conns[index] = conn
         connect_cb = (typeOf(connect_cb) ==  "function") ? connect_cb.bind(this) : this.connect.bind(this)
-        connect_cb(err, conn, opts)
+        connect_cb(err, conn, Object.merge(opts, {index: index}))
       }.bind(this)
 
       this.r = require('rethinkdb')
@@ -160,47 +199,48 @@ module.exports = new Class({
       // let table = this.options.conn[index].table
       let db = this.options.conn[index].db
       let table = this.options.conn[index].table
+      let accept = this.options.conn[index].accept
 
-      if(this.accept === true){
+      if(accept === true){
         this._save_docs(doc, index);
       }
-      else{
-        try{
-          this.r.dbList().run(conn, function(dbs){
-            let exist = false
-            Array.each(dbs, function(d){
-              if(d == db)
-                exist = true
-            })
 
-            if(exist === false){
-              this.r.dbCreate(db).run(conn, function(result){
-                // this._save_docs(doc, index);
-                try{
-                  this.r.db(db).tableCreate(table).run(conn, function(result){
-                    this.accept = true
-                    this._save_docs(doc, index);
-                  }.bind(this))
-                }
-                catch(e){
-                  // this._save_docs(doc, index);
-                  debug_internals('tableCreate error %o', e);
-                }
-              }.bind(this));
-            }
-            else {
-              this.accept = true
-            }
-          }.bind(this))
+        // try{
+        //   this.r.dbList().run(conn, function(dbs){
+        //     let exist = false
+        //     Array.each(dbs, function(d){
+        //       if(d == db)
+        //         exist = true
+        //     })
+        //
+        //     if(exist === false){
+        //       this.r.dbCreate(db).run(conn, function(result){
+        //         // this._save_docs(doc, index);
+        //         try{
+        //           this.r.db(db).tableCreate(table).run(conn, function(result){
+        //             this.accept = true
+        //             this._save_docs(doc, index);
+        //           }.bind(this))
+        //         }
+        //         catch(e){
+        //           // this._save_docs(doc, index);
+        //           debug_internals('tableCreate error %o', e);
+        //         }
+        //       }.bind(this));
+        //     }
+        //     else {
+        //       this.accept = true
+        //     }
+        //   }.bind(this))
+        //
+        //
+        // }
+        // catch(e){
+        //   // console.log(e)
+        //   debug_internals('dbCreate error %o', err);
+        //   // this._save_docs(doc, index);
+        // }
 
-
-        }
-        catch(e){
-          // console.log(e)
-          debug_internals('dbCreate error %o', err);
-          // this._save_docs(doc, index);
-        }
-      }
 
 
 
@@ -290,11 +330,12 @@ module.exports = new Class({
 			// let doc = this.buffer;
 			// this._save_docs(Array.clone(this.buffer));
 
-      this._save_to_dbs(Array.clone(this.buffer));
-      if(this.accept === true){
+      // if(this.accept === true){
+        this._save_to_dbs(Array.clone(this.buffer));
   			this.buffer = [];
   			this.buffer_expire = Date.now() + this.options.buffer.expire;
-      }
+      // }
+
 			// debug_internals('_save_buffer %o', doc);
 		// }
 
