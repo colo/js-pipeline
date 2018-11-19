@@ -98,7 +98,7 @@ module.exports = new Class({
       let _cb = function(err, conn){
         connect_cb = (typeOf(connect_cb) ==  "function") ? connect_cb.bind(this) : this.connect.bind(this)
         connect_cb(err, conn, opts)
-      }
+      }.bind(this)
 
       this.r = require('rethinkdb')
 
