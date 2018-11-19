@@ -248,7 +248,7 @@ module.exports = new Class({
       this.r.db(db).table(table).insert(doc).run(this.conns[index], function(result){
         debug_internals('insert result %o', result);
       })
-      debug_internals('tableCreate error %o', err);
+      debug_internals('tableCreate error %o', e);
     }
     // if((typeof(doc) == 'array' || doc instanceof Array || Array.isArray(doc)) && doc.length > 0){
     //   try{
