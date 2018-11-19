@@ -159,7 +159,7 @@ module.exports = new Class({
       // let table = this.options.conn[index].table
       let db = this.options.conn[index].db
       let table = this.options.conn[index].table
-      let conn = this.conns[index]
+      
 
       try{
         this.r.dbList().run(conn, function(dbs){
