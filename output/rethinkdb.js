@@ -171,7 +171,7 @@ module.exports = new Class({
               this._save_docs(doc, index);
             }.bind(this));
           }
-        })
+        }.bind(this))
 
 
 
