@@ -24,7 +24,7 @@ module.exports = new Class({
 
   ON_CONNECT: 'onConnect',
   ON_CONNECT_ERROR: 'onConnectError',
-  
+
   ON_DOC: 'onDoc',
 	//ON_DOC_ERROR: 'onDocError',
 
@@ -99,13 +99,14 @@ module.exports = new Class({
   		};
 
       let _cb = function(err, conn){
+        this.conns[index] = conn
         connect_cb = (typeOf(connect_cb) ==  "function") ? connect_cb.bind(this) : this.connect.bind(this)
         connect_cb(err, conn, opts)
       }.bind(this)
 
       this.r = require('rethinkdb')
 
-  		this.conns[index] = this.r.connect(Object.merge(opts, conn.rethinkdb), _cb)
+  		this.r.connect(Object.merge(opts, conn.rethinkdb), _cb)
 		}.bind(this));
 
 
