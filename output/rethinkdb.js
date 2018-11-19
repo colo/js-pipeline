@@ -185,6 +185,9 @@ module.exports = new Class({
               }
             }.bind(this));
           }
+          else {
+            this.accept = true
+          }
         }.bind(this))
 
 
