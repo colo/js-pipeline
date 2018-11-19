@@ -235,7 +235,7 @@ module.exports = new Class({
             exist = true
         }.bind(this))
 
-        console.log(db, table, exist)
+        console.log(db, table, tables, exist)
 
         if(exist === false){
           try{
