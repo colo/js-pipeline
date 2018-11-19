@@ -220,14 +220,16 @@ module.exports = new Class({
     }.bind(this));
   },
 	_save_docs: function(doc, index){
-		debug_events('_save_docs %o %s', doc, index);
+		debug_events('_save_docs %o %s', index);
 
     let db = this.options.conn[index].db
     let table = this.options.conn[index].table
     let conn = this.conns[index]
 
+    console.log(db, table)
+
       this.r.db(db).tableList().run(conn, function(tables){
-        console.log(tables)
+
         let exist = false
         Array.each(tables, function(t){
           if(t == table)
