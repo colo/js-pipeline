@@ -387,6 +387,17 @@ module.exports = new Class({
 								path: app.options.id
 							};
 
+							poll.addEvent(poll.ON_CONNECT, function(result){
+								debug_events('poll.ON_CONNECT %o', result);
+
+								this._register_poller(index, poll);
+							}.bind(this));
+
+							poll.addEvent(poll.ON_CONNECT_ERROR, function(err){
+								debug_events('poll.ON_CONNECT_ERROR %o', err);
+								this._register_error(index, poll);
+							}.bind(this));
+							
 							app.addEvent(app.ON_CONNECT, function(){
 							 debug_events('app.ON_CONNECT %o', arguments);
 							 poll.fireEvent(poll.ON_CONNECT, {input_type: poll, app: app});
@@ -452,16 +463,7 @@ module.exports = new Class({
 
 						}.bind(this));
 
-						poll.addEvent(poll.ON_CONNECT, function(result){
-							debug_events('poll.ON_CONNECT %o', result);
 
-							this._register_poller(index, poll);
-						}.bind(this));
-
-						poll.addEvent(poll.ON_CONNECT_ERROR, function(err){
-							debug_events('poll.ON_CONNECT_ERROR %o', err);
-							this._register_error(index, poll);
-						}.bind(this));
 
 
 					}
