@@ -387,34 +387,13 @@ module.exports = new Class({
 								path: app.options.id
 							};
 
-							poll.addEvent(poll.ON_CONNECT, function(result){
-								debug_events('poll.ON_CONNECT %o', result);
-
-								this._register_poller(index, poll);
-							}.bind(this));
-
-							poll.addEvent(poll.ON_CONNECT_ERROR, function(err){
-								debug_events('poll.ON_CONNECT_ERROR %o', err);
-								this._register_error(index, poll);
-							}.bind(this));
-							
-							app.addEvent(app.ON_CONNECT, function(){
-							 debug_events('app.ON_CONNECT %o', arguments);
-							 poll.fireEvent(poll.ON_CONNECT, {input_type: poll, app: app});
-						 	}.bind(this));
-
-							app.addEvent(app.ON_CONNECT_ERROR, function(){
-							 debug_events('app.ON_CONNECT_ERROR %o', arguments);
-							 poll.fireEvent(poll.ON_CONNECT_ERROR, {input_type: poll, app: app});
-						 	}.bind(this));
-
 							/**
 							 * DOCS from app to poll
 							 * */
-						 	app.addEvent(app.ON_DOC, function(doc){
+							 app.addEvent(app.ON_DOC, function(doc){
  								debug_events('app.ON_DOC %o', arguments);
  								poll.fireEvent(poll.ON_DOC, [doc, {type: 'doc', input_type: poll, app: app}]);
-							}.bind(this));
+ 							}.bind(this));
 
  							app.addEvent(app.ON_DOC_ERROR, function(doc){
  								debug_events('app.ON_DOC_ERROR %o', arguments);
@@ -463,7 +442,16 @@ module.exports = new Class({
 
 						}.bind(this));
 
+						poll.addEvent(poll.ON_CONNECT, function(result){
+							debug_events('poll.ON_CONNECT %o', result);
 
+							this._register_poller(index, poll);
+						}.bind(this));
+
+						poll.addEvent(poll.ON_CONNECT_ERROR, function(err){
+							debug_events('poll.ON_CONNECT_ERROR %o', err);
+							this._register_error(index, poll);
+						}.bind(this));
 
 
 					}
