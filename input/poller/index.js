@@ -164,26 +164,42 @@ module.exports = new Class({
 
 						this.addEvent(this.ON_EXIT, function(req){
 							console.log('ON_EXIT %o', req);
+							if(Array.isArray(req))
+								req = [req]
+								
 							poll.fireEvent(poll.ON_EXIT, req);
 						}.bind(this));
 
 						this.addEvent(this.ON_SUSPEND, function(req){
 							debug_events('ON_SUSPEND %o', req);
+							if(Array.isArray(req))
+								req = [req]
+
 							poll.fireEvent(poll.ON_SUSPEND, req);
 						}.bind(this));
 
 						this.addEvent(this.ON_RESUME, function(req){
 							debug_events('ON_RESUME %o', req);
+							if(Array.isArray(req))
+								req = [req]
+
 							poll.fireEvent(poll.ON_RESUME, req);
 						}.bind(this));
 
 						this.addEvent(this.ON_ONCE, function(req){
 							debug_events('ON_ONCE %o', req);
+							if(Array.isArray(req))
+								req = [req]
+
 							poll.fireEvent(poll.ON_ONCE, req);
 						}.bind(this));
 
 						this.addEvent(this.ON_RANGE, function(req){
 							debug_events('ON_RANGE %o', req);
+							// console.log('js-pipeline INPUT ON_RANGE', req)
+							if(Array.isArray(req))
+								req = [req]
+
 							poll.fireEvent(poll.ON_RANGE, req);
 						}.bind(this));
 
@@ -692,83 +708,103 @@ module.exports = new Class({
 	dispatch_range: function(req, app, app_req, type){
 		//////console.log('dispatch_range')
 
-		if((!req.get && req.Range) || req.get('Range')){
-			let range = (!req.get) ? req.Range.trim() : req.get('Range').trim()
+		let build_range = function(req){
+			if((!req.get && req.Range) || req.get('Range')){
+				let range = (!req.get) ? req.Range.trim() : req.get('Range').trim()
 
-			// ////console.log('range', range)
-			//var type = req.get('Range').trim().split(' ', 1)[0];
-			//var type = req.get('Range').trim().split(' ', 1)[0];
+				// ////console.log('range', range)
+				//var type = req.get('Range').trim().split(' ', 1)[0];
+				//var type = req.get('Range').trim().split(' ', 1)[0];
 
-			var words = /(\w+)(?:\s)(\w+)(?:-)(\w+)/g;
-			var match = words.exec(range);
-			var type = match[1].toLowerCase();
+				var words = /(\w+)(?:\s)(\w+)(?:-)(\w+)/g;
+				var match = words.exec(range);
+				var type = match[1].toLowerCase();
 
-			//////console.log('--HEADER---');
-			//////console.log(match);
+				//////console.log('--HEADER---');
+				//////console.log(match);
 
-			var start, end;
+				var start, end;
 
-			switch (type){
-				case 'date':
-				case 'utc':
-					var date = /^(\d\d\d\d)?(\d\d)?(\d\d)?(\d\d)?(\d\d)?(\d\d)?(\d\d)?$/;
-					start = date.exec(match[2]);
-					end = date.exec(match[3]);
+				switch (type){
+					case 'date':
+					case 'utc':
+						var date = /^(\d\d\d\d)?(\d\d)?(\d\d)?(\d\d)?(\d\d)?(\d\d)?(\d\d)?$/;
+						start = date.exec(match[2]);
+						end = date.exec(match[3]);
 
-					//////console.log(start);
-					//////console.log(end);
+						//////console.log(start);
+						//////console.log(end);
 
-					start.forEach(function(value, i){
-						if(!value)
-							start[i] = 0;
-					});
+						start.forEach(function(value, i){
+							if(!value)
+								start[i] = 0;
+						});
 
-					end.forEach(function(value, i){
-						if(!value)
-							end[i] = 0;
-					});
+						end.forEach(function(value, i){
+							if(!value)
+								end[i] = 0;
+						});
 
-					if(type == 'utc'){
-						start = new Date(
-							Date.UTC(start[1], start[2], start[3], start[4], start[5], start[6], start[7])
-						).getTime();
+						if(type == 'utc'){
+							start = new Date(
+								Date.UTC(start[1], start[2], start[3], start[4], start[5], start[6], start[7])
+							).getTime();
 
-						end = new Date(
-							Date.UTC(end[1], end[2], end[3], end[4], end[5], end[6], end[7])
-						).getTime();
-					}
-					else{
-						start = new Date(start[1], start[2], start[3], start[4], start[5], start[6], start[7]).getTime();
-						end = new Date(end[1], end[2], end[3], end[4], end[5], end[6], end[7]).getTime();
-					}
-
-
-				break;
-
-				case 'posix':
-				case 'epoch':
-					start = parseInt(match[2]);
-					end = parseInt(match[3]);
-
-				break;
-
-				default:
-					throw new Error('Type ['+type+'] not implemented');
-
-			};
+							end = new Date(
+								Date.UTC(end[1], end[2], end[3], end[4], end[5], end[6], end[7])
+							).getTime();
+						}
+						else{
+							start = new Date(start[1], start[2], start[3], start[4], start[5], start[6], start[7]).getTime();
+							end = new Date(end[1], end[2], end[3], end[4], end[5], end[6], end[7]).getTime();
+						}
 
 
-			req['opt'] = {
-				range: {
+					break;
+
+					case 'posix':
+					case 'epoch':
+						start = parseInt(match[2]);
+						end = parseInt(match[3]);
+
+					break;
+
+					default:
+						throw new Error('Type ['+type+'] not implemented');
+
+				};
+
+
+				return {
 					type: type,
 					start: start,
 					end: end
-				},
-			};
+				}
+
+			}
+			else{
+				throw new Error('No Range header!');
+			}
+		}
+
+		let range = undefined
+		if(Array.isArray(req)){
+			range = []
+			Array.each(req, function(_req){
+				try{
+					range.push(build_range(_req))
+				}
+				catch(e){}
+
+			})
 		}
 		else{
-			throw new Error('No Range header!');
+			range = build_range(req)
 		}
+
+		req['opt'] = {
+			range: range
+		};
 
 		debug_internals('dispatch_range %o', req['opt']);
 

@@ -130,18 +130,34 @@ module.exports = new Class({
 	start: function(){
 		Array.each(this.inputs, function(input){
 			this.addEvent(this.ON_SUSPEND, function(req){
+				if(Array.isArray(req))
+					req = [req]
+					
 				input.fireEvent(input.ON_SUSPEND, req);
 			});
 			this.addEvent(this.ON_RESUME, function(req){
+				if(Array.isArray(req))
+					req = [req]
+
 				input.fireEvent(input.ON_RESUME, req);
 			});
 			this.addEvent(this.ON_EXIT, function(req){
+				if(Array.isArray(req))
+					req = [req]
+
 				input.fireEvent(input.ON_EXIT, req);
 			});
 			this.addEvent(this.ON_RANGE, function(req){
+				// console.log('js-pipeline ON_RANGE', req)
+				if(Array.isArray(req))
+					req = [req]
+
 				input.fireEvent(input.ON_RANGE, req);
 			});
 			this.addEvent(this.ON_ONCE, function(req){
+				if(Array.isArray(req))
+					req = [req]
+
 				input.fireEvent(input.ON_ONCE, req);
 			});
 
