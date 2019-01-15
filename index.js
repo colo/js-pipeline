@@ -12,6 +12,10 @@ var debug_events = require('debug')('Server:App:Pipeline:Events');
 module.exports = new Class({
   Implements: [Options, Events],
 
+	ON_INIT: 'onInit',
+
+	// ON_CONNECT: 'onConnect',
+
 	ON_SUSPEND: 'onSuspend',
 	ON_RESUME: 'onResume',
 	ON_EXIT: 'onExit',
@@ -74,9 +78,11 @@ module.exports = new Class({
 				let type = Object.keys(output)[0];
 
 				if(typeof(output) == 'function'){
+					output.bind(this)
 					this.outputs.push(output);
 				}
 				else if(output[type].module){
+					debug_internals('output %o', output[type])
 					this.outputs.push(new output[type].module(output[type]));
 				}
 				else{
@@ -89,6 +95,8 @@ module.exports = new Class({
 
 
 		this.start();
+
+
 	},
 	__process_input: function(input){
 		let type = Object.keys(input)[0];
@@ -281,6 +289,7 @@ module.exports = new Class({
 			//input.connect();
 		}.bind(this));
 
+		this.fireEvent(this.ON_INIT)
 	},
 	output: function(save_doc){
 		if(Array.isArray(save_doc)){
