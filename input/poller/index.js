@@ -166,7 +166,7 @@ module.exports = new Class({
 							console.log('ON_EXIT %o', req);
 							if(Array.isArray(req))
 								req = [req]
-								
+
 							poll.fireEvent(poll.ON_EXIT, req);
 						}.bind(this));
 
@@ -474,7 +474,7 @@ module.exports = new Class({
 
 					try{
 
-						if(this.err_poller_count[index] < this.options.connect_retry_count){
+						if(this.options.connect_retry_count < 0 || this.err_poller_count[index] < this.options.connect_retry_count){
 							//poll.os.api.get({uri: 'hostname'});
 							poll.connect();
 						}
