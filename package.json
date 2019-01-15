@@ -17,10 +17,7 @@
   },
   "homepage": "https://github.com/colo/js-pipeline#readme",
   "dependencies": {
-    "cradle-pouchdb-server": "^0.7.1",
     "debug": "^3.1.0",
-    "mootools": "^1.5.2",
-    "nano": "^7.0.0",
-    "rethinkdb": "^2.3.3"
+    "mootools": "^1.5.2"
   }
 }
