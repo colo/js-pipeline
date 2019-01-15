@@ -31,7 +31,7 @@ module.exports = new Class({
 	ON_SAVE_DOC: 'onSaveDoc',
 	ON_SAVE_MULTIPLE_DOCS: 'onSaveMultipleDocs',
 
-	inputs: [],
+	inputs: undefined,
 	//filters: [],
 	outputs: [],
 
@@ -47,41 +47,25 @@ module.exports = new Class({
 		//console.log(this.options);
 		debug_internals('PollerInputs %o', this.options.input);
 
+
 		if(this.options.input){
-			Array.each(this.options.input, function(input){
+			if(Array.isArray(this.options.input)){//on array maybe use input.id as object.key
+				this.inputs = []
+				Array.each(this.options.input, function(input, index){
+					let _input = this.__process_input(input)
+					if(_input) this.inputs.push(_input)
+					debug_internals('PollerInputs %s %o', index, _input)
+				}.bind(this));
+			}
+			else{
+				this.inputs = {}
+				Object.each(this.options.input, function(input, name){
+					let _input = this.__process_input(input)
+					if(_input) this.inputs[name] = _input
+					debug_internals('PollerInputs %s %o', name, _input)
+				}.bind(this))
+			}
 
-				let type = Object.keys(input)[0];
-				//console.log(input[type]);
-
-				//throw new Error();
-
-				//var input_instance = null;
-
-				switch (type){
-					case 'poll':
-						debug_internals('Adding PollerInput %o', input[type]);
-
-						this.inputs.push(new Poller(input[type]));
-
-						break;
-
-					case 'push':
-						debug_internals('Adding PusherInput %o', input[type]);
-
-						this.inputs.push(new Pusher(input[type]));
-
-						break;
-
-					default:
-						throw new Error('Input ['+type+'] not implemented');
-				}
-
-				//if(input_instance != null){
-					//this.addEvent(this.ON_SUSPEND, function(req){
-					//});
-				//}
-
-			}.bind(this));
 
 		}
 
@@ -100,162 +84,174 @@ module.exports = new Class({
 				}
 
 
-
-
-				//switch (type){
-					//case 'cradle':
-
-						//debug_internals('Adding CradleOutput %o', output[type]);
-
-						//this.outputs.push(new CradleOutput(output[type]));
-
-						//break;
-
-					//default:
-						//debug_internals('Typeof output %o', typeof(output));
-						//if(typeof(output) == 'function'){
-							//this.outputs.push(output);
-						//}
-						//else{
-							//throw new Error('Output ['+type+'] not implemented');
-						//}
-				//}
-
 			}.bind(this));
 		}
 
 
 		this.start();
 	},
+	__process_input: function(input){
+		let type = Object.keys(input)[0];
+		let result = undefined
+
+		switch (type){
+			case 'poll':
+				debug_internals('Adding PollerInput %o', input[type]);
+				result = new Poller(input[type])
+				break;
+
+			case 'push':
+				debug_internals('Adding PusherInput %o', input[type]);
+				result = new Pusher(input[type])
+				break;
+
+			default:
+				throw new Error('Input ['+type+'] not implemented');
+		}
+
+		return result
+	},
+	__start_input: function(input){
+		this.addEvent(this.ON_SUSPEND, function(req){
+			if(Array.isArray(req))
+				req = [req]
+
+			input.fireEvent(input.ON_SUSPEND, req);
+		});
+		this.addEvent(this.ON_RESUME, function(req){
+			if(Array.isArray(req))
+				req = [req]
+
+			input.fireEvent(input.ON_RESUME, req);
+		});
+		this.addEvent(this.ON_EXIT, function(req){
+			if(Array.isArray(req))
+				req = [req]
+
+			input.fireEvent(input.ON_EXIT, req);
+		});
+		this.addEvent(this.ON_RANGE, function(req){
+			// console.log('js-pipeline ON_RANGE', req)
+			if(Array.isArray(req))
+				req = [req]
+
+			input.fireEvent(input.ON_RANGE, req);
+		});
+		this.addEvent(this.ON_ONCE, function(req){
+			if(Array.isArray(req))
+				req = [req]
+
+			input.fireEvent(input.ON_ONCE, req);
+		});
+
+		//input['ON_SAVE_DOC'] = this.ON_SAVE_DOC;
+		//input['ON_SAVE_MULTIPLE_DOCS'] = this.ON_SAVE_MULTIPLE_DOCS;
+
+		//input.addEvent(input.ON_SAVE_DOC, function(doc){
+			//this.fireEvent(this.ON_SAVE_DOC, doc);
+		//}.bind(this));
+
+		//input.addEvent(input.ON_SAVE_MULTIPLE_DOCS, function(docs){
+			//this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [docs]);
+		//}.bind(this));
+
+		if(input.ON_DOC)
+			input.addEvent(input.ON_DOC, function(doc, opts){
+				debug_events('input.ON_DOC %o', doc);
+
+				if(this.options.filters && this.options.filters.length > 0){
+					opts.input = input;
+					// this._apply_filters(doc, opts, Array.clone(this.options.filters), Array.clone(this.options.filters).shift());
+					this._apply_filters(doc, opts);
+				}
+				else{
+					if(Array.isArray(doc)){
+						this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc]);
+					}
+					else{
+						this.fireEvent(this.ON_SAVE_DOC, doc);
+					}
+				}
+
+
+			}.bind(this));
+
+		if(input.ON_ONCE_DOC)
+			input.addEvent(input.ON_ONCE_DOC, function(doc, opts){
+				debug_events('input.ON_ONCE_DOC %o', doc);
+
+				if(this.options.filters && this.options.filters.length > 0){
+					opts.input = input;
+					// this._apply_filters(doc, opts, Array.clone(this.options.filters), Array.clone(this.options.filters).shift());
+					this._apply_filters(doc, opts);
+				}
+				else{
+					if(Array.isArray(doc)){
+						this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc]);
+					}
+					else{
+						this.fireEvent(this.ON_SAVE_DOC, doc);
+					}
+				}
+
+
+			}.bind(this));
+
+		if(input.ON_PERIODICAL_DOC)
+			input.addEvent(input.ON_PERIODICAL_DOC, function(doc, opts){
+				debug_events('input.ON_PERIODICAL_DOC %o', doc);
+
+				if(this.options.filters && this.options.filters.length > 0){
+					opts.input = input;
+					// this._apply_filters(doc, opts, Array.clone(this.options.filters), Array.clone(this.options.filters).shift());
+					this._apply_filters(doc, opts);
+				}
+				else{
+					if(Array.isArray(doc)){
+						this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc]);
+					}
+					else{
+						this.fireEvent(this.ON_SAVE_DOC, doc);
+					}
+				}
+
+			}.bind(this));
+
+		if(input.ON_RANGE_DOC)
+			input.addEvent(input.ON_RANGE_DOC, function(doc, opts){
+				debug_events('input.ON_RANGE_DOC %o', doc);
+
+				if(this.options.filters && this.options.filters.length > 0){
+					opts.input = input;
+					// this._apply_filters(doc, opts, Array.clone(this.options.filters), Array.clone(this.options.filters).shift());
+					this._apply_filters(doc, opts);
+				}
+				else{
+					if(Array.isArray(doc)){
+						this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc]);
+					}
+					else{
+						this.fireEvent(this.ON_SAVE_DOC, doc);
+					}
+				}
+
+			}.bind(this));
+
+		input.connect();
+	},
 	start: function(){
-		Array.each(this.inputs, function(input){
-			this.addEvent(this.ON_SUSPEND, function(req){
-				if(Array.isArray(req))
-					req = [req]
-					
-				input.fireEvent(input.ON_SUSPEND, req);
-			});
-			this.addEvent(this.ON_RESUME, function(req){
-				if(Array.isArray(req))
-					req = [req]
-
-				input.fireEvent(input.ON_RESUME, req);
-			});
-			this.addEvent(this.ON_EXIT, function(req){
-				if(Array.isArray(req))
-					req = [req]
-
-				input.fireEvent(input.ON_EXIT, req);
-			});
-			this.addEvent(this.ON_RANGE, function(req){
-				// console.log('js-pipeline ON_RANGE', req)
-				if(Array.isArray(req))
-					req = [req]
-
-				input.fireEvent(input.ON_RANGE, req);
-			});
-			this.addEvent(this.ON_ONCE, function(req){
-				if(Array.isArray(req))
-					req = [req]
-
-				input.fireEvent(input.ON_ONCE, req);
-			});
-
-			//input['ON_SAVE_DOC'] = this.ON_SAVE_DOC;
-			//input['ON_SAVE_MULTIPLE_DOCS'] = this.ON_SAVE_MULTIPLE_DOCS;
-
-			//input.addEvent(input.ON_SAVE_DOC, function(doc){
-				//this.fireEvent(this.ON_SAVE_DOC, doc);
-			//}.bind(this));
-
-			//input.addEvent(input.ON_SAVE_MULTIPLE_DOCS, function(docs){
-				//this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [docs]);
-			//}.bind(this));
-
-			if(input.ON_DOC)
-				input.addEvent(input.ON_DOC, function(doc, opts){
-					debug_events('input.ON_DOC %o', doc);
-
-					if(this.options.filters && this.options.filters.length > 0){
-						opts.input = input;
-						// this._apply_filters(doc, opts, Array.clone(this.options.filters), Array.clone(this.options.filters).shift());
-						this._apply_filters(doc, opts);
-					}
-					else{
-						if(Array.isArray(doc)){
-							this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc]);
-						}
-						else{
-							this.fireEvent(this.ON_SAVE_DOC, doc);
-						}
-					}
+		if(Array.isArray(this.inputs)){
+			Array.each(this.inputs, function(input){
+				this.__start_input(input)
+			}.bind(this));
+		}
+		else{
+			Object.each(this.inputs, function(input){
+				this.__start_input(input)
+			}.bind(this));
+		}
 
 
-				}.bind(this));
-
-			if(input.ON_ONCE_DOC)
-				input.addEvent(input.ON_ONCE_DOC, function(doc, opts){
-					debug_events('input.ON_ONCE_DOC %o', doc);
-
-					if(this.options.filters && this.options.filters.length > 0){
-						opts.input = input;
-						// this._apply_filters(doc, opts, Array.clone(this.options.filters), Array.clone(this.options.filters).shift());
-						this._apply_filters(doc, opts);
-					}
-					else{
-						if(Array.isArray(doc)){
-							this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc]);
-						}
-						else{
-							this.fireEvent(this.ON_SAVE_DOC, doc);
-						}
-					}
-
-
-				}.bind(this));
-
-			if(input.ON_PERIODICAL_DOC)
-				input.addEvent(input.ON_PERIODICAL_DOC, function(doc, opts){
-					debug_events('input.ON_PERIODICAL_DOC %o', doc);
-
-					if(this.options.filters && this.options.filters.length > 0){
-						opts.input = input;
-						// this._apply_filters(doc, opts, Array.clone(this.options.filters), Array.clone(this.options.filters).shift());
-						this._apply_filters(doc, opts);
-					}
-					else{
-						if(Array.isArray(doc)){
-							this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc]);
-						}
-						else{
-							this.fireEvent(this.ON_SAVE_DOC, doc);
-						}
-					}
-
-				}.bind(this));
-
-			if(input.ON_RANGE_DOC)
-				input.addEvent(input.ON_RANGE_DOC, function(doc, opts){
-					debug_events('input.ON_RANGE_DOC %o', doc);
-
-					if(this.options.filters && this.options.filters.length > 0){
-						opts.input = input;
-						// this._apply_filters(doc, opts, Array.clone(this.options.filters), Array.clone(this.options.filters).shift());
-						this._apply_filters(doc, opts);
-					}
-					else{
-						if(Array.isArray(doc)){
-							this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc]);
-						}
-						else{
-							this.fireEvent(this.ON_SAVE_DOC, doc);
-						}
-					}
-
-				}.bind(this));
-
-			input.connect();
-		}.bind(this));
 
 		Array.each(this.outputs, function(output){
 
