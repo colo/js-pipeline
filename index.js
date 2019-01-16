@@ -12,7 +12,7 @@ var debug_events = require('debug')('Server:App:Pipeline:Events');
 module.exports = new Class({
   Implements: [Options, Events],
 
-	ON_INIT: 'onInit',
+	// ON_INIT: 'onInit',
 
 	// ON_CONNECT: 'onConnect',
 
@@ -45,7 +45,7 @@ module.exports = new Class({
 		output: null,
 
 	},
-	initialize: function(options, cb){
+	initialize: function(options){
 		this.setOptions(options);
 
 		//console.log(this.options);
@@ -94,7 +94,7 @@ module.exports = new Class({
 		}
 
 
-		this.start(cb);
+		this.start();
 
 
 	},
@@ -247,7 +247,7 @@ module.exports = new Class({
 
 		input.connect();
 	},
-	start: function(cb){
+	start: function(){
 		if(Array.isArray(this.inputs)){
 			Array.each(this.inputs, function(input){
 				this.__start_input(input)
@@ -289,10 +289,7 @@ module.exports = new Class({
 			//input.connect();
 		}.bind(this));
 
-		// this.fireEvent(this.ON_INIT)
-		if(typeof cb == 'function'){
-			cb.attempt(undefined, this)
-		}
+		
 	},
 	output: function(save_doc){
 		if(Array.isArray(save_doc)){
