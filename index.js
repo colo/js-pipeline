@@ -45,7 +45,7 @@ module.exports = new Class({
 		output: null,
 
 	},
-	initialize: function(options){
+	initialize: function(options, cb){
 		this.setOptions(options);
 
 		//console.log(this.options);
@@ -94,7 +94,7 @@ module.exports = new Class({
 		}
 
 
-		this.start();
+		this.start(cb);
 
 
 	},
@@ -247,7 +247,7 @@ module.exports = new Class({
 
 		input.connect();
 	},
-	start: function(){
+	start: function(cb){
 		if(Array.isArray(this.inputs)){
 			Array.each(this.inputs, function(input){
 				this.__start_input(input)
@@ -289,7 +289,10 @@ module.exports = new Class({
 			//input.connect();
 		}.bind(this));
 
-		this.fireEvent(this.ON_INIT)
+		// this.fireEvent(this.ON_INIT)
+		if(typeof cb == 'function'){
+			cb.attempt(undefined, this)
+		}
 	},
 	output: function(save_doc){
 		if(Array.isArray(save_doc)){
