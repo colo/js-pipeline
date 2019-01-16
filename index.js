@@ -36,7 +36,7 @@ module.exports = new Class({
 	ON_SAVE_MULTIPLE_DOCS: 'onSaveMultipleDocs',
 
 	ON_DOC_SAVED: 'onDocSaved',
-	
+
 	inputs: undefined,
 	//filters: [],
 	outputs: [],
@@ -80,7 +80,7 @@ module.exports = new Class({
 				let type = Object.keys(output)[0];
 
 				if(typeof(output) == 'function'){
-					output.bind(this)
+					output = output.bind(this)
 					this.outputs.push(output);
 				}
 				else if(output[type].module){
