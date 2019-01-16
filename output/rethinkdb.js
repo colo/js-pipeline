@@ -25,6 +25,7 @@ module.exports = new Class({
 
   ON_CONNECT: 'onConnect',
   ON_CONNECT_ERROR: 'onConnectError',
+  ON_ACCEPT: 'onAccept',
 
   ON_DOC: 'onDoc',
 	//ON_DOC_ERROR: 'onDocError',
@@ -37,6 +38,8 @@ module.exports = new Class({
 
   ON_SAVE_DOC: 'onSaveDoc',
   ON_SAVE_MULTIPLE_DOCS: 'onSaveMultipleDocs',
+
+  ON_DOC_SAVED: 'onDocSaved',
 
   options: {
 		id: null,
@@ -65,7 +68,9 @@ module.exports = new Class({
       size: 5,//-1 =will add until expire | 0 = no buffer | N > 0 = limit buffer no more than N
 			expire: 5000, //miliseconds until saving
 			periodical: 1000 //how often will check if buffer timestamp has expire
-		}
+		},
+
+    insert: {durability: 'hard', returnChanges: 'always', conflict: 'replace'},
 	},
   connect(err, conn, params){
 		debug_events('connect %o', err, conn)
@@ -82,7 +87,8 @@ module.exports = new Class({
         let db = this.options.conn[index].db
         let table = this.options.conn[index].table
 
-        this.r.dbList().run(conn, function(dbs){
+        this.r.dbList().run(conn, function(err, dbs){
+          debug_internals('connect-> setting dbs %o %s', dbs, db);
           let exist = false
           Array.each(dbs, function(d){
             if(d == db)
@@ -90,11 +96,15 @@ module.exports = new Class({
           })
 
           if(exist === false){
-            this.r.dbCreate(db).run(conn, function(result){
+            debug_internals('connect-> setting db/table %o', this.options.conn[index]);
+            this.r.dbCreate(db).run(conn, function(err, result){
               // this._save_docs(doc, index);
               try{
-                this.r.db(db).tableCreate(table).run(conn, function(result){
+                this.r.db(db).tableCreate(table).run(conn, function(err, result){
+                  debug_internals('connect-> setting db/table %o create', err, result);
                   this.options.conn[index].accept = true
+
+                  this.fireEvent(this.ON_ACCEPT)
                 }.bind(this))
               }
               catch(e){
@@ -105,6 +115,8 @@ module.exports = new Class({
           }
           else {
             this.options.conn[index].accept = true
+
+            this.fireEvent(this.ON_ACCEPT)
           }
         }.bind(this))
 
@@ -168,7 +180,7 @@ module.exports = new Class({
 
 	},
 	save: function(doc){
-		// debug('save %o', doc);
+		debug_internals('save %o', doc);
 
 		if(this.options.buffer.size == 0){
 
@@ -201,8 +213,16 @@ module.exports = new Class({
       let table = this.options.conn[index].table
       let accept = this.options.conn[index].accept
 
+      debug_internals('_save_to_dbs %s %s %o', db, table, this.options.conn[index])
       if(accept === true){
         this._save_docs(doc, index);
+      }
+      else{
+        let _save = function(){
+          this._save_docs(doc, index);
+          this.removeEvent(this.ON_ACCEPT, _save)
+        }.bind(this)
+        this.addEvent(this.ON_ACCEPT, _save)
       }
 
         // try{
@@ -248,15 +268,16 @@ module.exports = new Class({
     }.bind(this));
   },
 	_save_docs: function(doc, index){
-		debug_internals('_save_docs %o %s', index);
+		debug_internals('_save_docs %o %s %o', doc, index, this.options.insert);
 
     let db = this.options.conn[index].db
     let table = this.options.conn[index].table
     let conn = this.conns[index]
 
-    this.r.db(db).table(table).insert(doc).run(conn, function(result){
-      debug_internals('insert result %o', result);
-    })
+    this.r.db(db).table(table).insert(doc, this.options.insert).run(conn, function(err, result){
+      debug_internals('insert result %o', err, result);
+      this.fireEvent(this.ON_DOC_SAVED, [err, result])
+    }.bind(this))
       // this.r.db(db).tableList().run(conn, function(tables){
       //
       //   let exist = false

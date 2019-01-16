@@ -35,6 +35,8 @@ module.exports = new Class({
 	ON_SAVE_DOC: 'onSaveDoc',
 	ON_SAVE_MULTIPLE_DOCS: 'onSaveMultipleDocs',
 
+	ON_DOC_SAVED: 'onDocSaved',
+	
 	inputs: undefined,
 	//filters: [],
 	outputs: [],
@@ -286,10 +288,32 @@ module.exports = new Class({
 				}
 			}.bind(this));
 
+			if(output.ON_DOC_SAVED)
+				output.addEvent(output.ON_DOC_SAVED, function(err, result){
+					debug_events('output.ON_DOC_SAVED %o', err, result);
+
+					this.fireEvent(this.ON_DOC_SAVED, [err, result]);
+
+					// if(this.options.filters && this.options.filters.length > 0){
+					// 	opts.input = input;
+					// 	// this._apply_filters(doc, opts, Array.clone(this.options.filters), Array.clone(this.options.filters).shift());
+					// 	this._apply_filters(doc, opts);
+					// }
+					// else{
+					// 	if(Array.isArray(doc)){
+					// 		this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc]);
+					// 	}
+					// 	else{
+					// 		this.fireEvent(this.ON_SAVE_DOC, doc);
+					// 	}
+					// }
+
+				}.bind(this));
+
 			//input.connect();
 		}.bind(this));
 
-		
+
 	},
 	output: function(save_doc){
 		if(Array.isArray(save_doc)){
