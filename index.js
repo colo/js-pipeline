@@ -176,10 +176,10 @@ module.exports = new Class({
 				}
 				else{
 					if(Array.isArray(doc)){
-						this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc]);
+						this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc], opts);
 					}
 					else{
-						this.fireEvent(this.ON_SAVE_DOC, doc);
+						this.fireEvent(this.ON_SAVE_DOC, doc, opts);
 					}
 				}
 
@@ -197,10 +197,10 @@ module.exports = new Class({
 				}
 				else{
 					if(Array.isArray(doc)){
-						this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc]);
+						this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc], opts);
 					}
 					else{
-						this.fireEvent(this.ON_SAVE_DOC, doc);
+						this.fireEvent(this.ON_SAVE_DOC, doc, opts);
 					}
 				}
 
@@ -219,10 +219,10 @@ module.exports = new Class({
 				}
 				else{
 					if(Array.isArray(doc)){
-						this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc]);
+						this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc], opts);
 					}
 					else{
-						this.fireEvent(this.ON_SAVE_DOC, doc);
+						this.fireEvent(this.ON_SAVE_DOC, doc, opts);
 					}
 				}
 
@@ -239,10 +239,10 @@ module.exports = new Class({
 				}
 				else{
 					if(Array.isArray(doc)){
-						this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc]);
+						this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [doc], opts);
 					}
 					else{
-						this.fireEvent(this.ON_SAVE_DOC, doc);
+						this.fireEvent(this.ON_SAVE_DOC, doc, opts);
 					}
 				}
 
