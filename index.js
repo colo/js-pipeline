@@ -189,7 +189,7 @@ module.exports = new Class({
 		if(input.ON_ONCE_DOC)
 			input.addEvent(input.ON_ONCE_DOC, function(doc, opts){
 				debug_events('input.ON_ONCE_DOC %o', doc);
-
+				opts = Object.merge(opts, {once: true})
 				if(this.options.filters && this.options.filters.length > 0){
 					opts.input = input;
 					// this._apply_filters(doc, opts, Array.clone(this.options.filters), Array.clone(this.options.filters).shift());
@@ -210,6 +210,7 @@ module.exports = new Class({
 		if(input.ON_PERIODICAL_DOC)
 			input.addEvent(input.ON_PERIODICAL_DOC, function(doc, opts){
 				debug_events('input.ON_PERIODICAL_DOC %o', doc);
+				opts = Object.merge(opts, {periodical: true})
 
 				if(this.options.filters && this.options.filters.length > 0){
 					opts.input = input;
@@ -230,7 +231,7 @@ module.exports = new Class({
 		if(input.ON_RANGE_DOC)
 			input.addEvent(input.ON_RANGE_DOC, function(doc, opts){
 				debug_events('input.ON_RANGE_DOC %o', doc);
-
+				opts = Object.merge(opts, {range: true})
 				if(this.options.filters && this.options.filters.length > 0){
 					opts.input = input;
 					// this._apply_filters(doc, opts, Array.clone(this.options.filters), Array.clone(this.options.filters).shift());
@@ -265,26 +266,26 @@ module.exports = new Class({
 
 		Array.each(this.outputs, function(output){
 
-			this.addEvent(this.ON_SAVE_DOC, function(doc){
+			this.addEvent(this.ON_SAVE_DOC, function(doc, opts){
 				debug_events('ON_SAVE_DOC %o', doc);
 
 				if(typeof(output) == 'function'){
 					//output(JSON.encode(doc));
-					output(doc);
+					output(doc, opts);
 				}
 				else{
-					output.fireEvent(output.ON_SAVE_DOC, doc);
+					output.fireEvent(output.ON_SAVE_DOC, doc, opts);
 				}
 			}.bind(this));
 
-			this.addEvent(this.ON_SAVE_MULTIPLE_DOCS, function(docs){
+			this.addEvent(this.ON_SAVE_MULTIPLE_DOCS, function(docs, opts){
 				debug_events('ON_SAVE_MULTIPLE_DOCS %o', docs);
 				if(typeof(output) == 'function'){
 					//output(JSON.encode(docs));
-					output(docs);
+					output(docs, opts);
 				}
 				else{
-					output.fireEvent(output.ON_SAVE_MULTIPLE_DOCS, [docs]);
+					output.fireEvent(output.ON_SAVE_MULTIPLE_DOCS, [docs], opts);
 				}
 			}.bind(this));
 
@@ -315,12 +316,12 @@ module.exports = new Class({
 
 
 	},
-	output: function(save_doc){
+	output: function(save_doc, opts){
 		if(Array.isArray(save_doc)){
-			this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [save_doc]);
+			this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [save_doc], opts);
 		}
 		else{
-			this.fireEvent(this.ON_SAVE_DOC, save_doc);
+			this.fireEvent(this.ON_SAVE_DOC, save_doc, opts);
 		}
 		//this.fireEvent(this.ON_SAVE_DOC, save_doc);
 	},
