@@ -70,7 +70,7 @@ module.exports = new Class({
 			periodical: 1000 //how often will check if buffer timestamp has expire
 		},
 
-    insert: {durability: 'hard', returnChanges: 'always', conflict: 'replace'},
+    insert: {durability: 'soft', returnChanges: false, conflict: 'replace'},
 	},
   connect(err, conn, params){
 		debug_events('connect %o', err, conn)
