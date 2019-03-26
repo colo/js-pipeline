@@ -170,21 +170,25 @@ module.exports = new Class({
 							poll.fireEvent(poll.ON_EXIT, req);
 						}.bind(this));
 
-						this.addEvent(this.ON_SUSPEND, function(req){
+						let __poll_suspend = function(req){
 							debug_events('ON_SUSPEND %o', req);
 							if(Array.isArray(req))
 								req = [req]
 
 							poll.fireEvent(poll.ON_SUSPEND, req);
-						}.bind(this));
+						}.bind(this)
 
-						this.addEvent(this.ON_RESUME, function(req){
+						this.addEvent(this.ON_SUSPEND, __poll_suspend);
+
+						let __poll_resume = function(req){
 							debug_events('ON_RESUME %o', req);
 							if(Array.isArray(req))
 								req = [req]
 
 							poll.fireEvent(poll.ON_RESUME, req);
-						}.bind(this));
+						}.bind(this)
+
+						this.addEvent(this.ON_RESUME, __poll_resume);
 
 						this.addEvent(this.ON_ONCE, function(req){
 							debug_events('ON_ONCE %o', req);
@@ -211,14 +215,27 @@ module.exports = new Class({
 						// 	debug_events('poll.ON_EXIT %o', arguments);
 						// 	this.fireEvent(this.ON_EXIT, [arguments]);
 						// }.bind(this));
-						// poll.addEvent(poll.ON_SUSPEND, function(doc, options){
- 						// 	debug_events('poll.ON_SUSPEND %o', arguments);
- 						// 	this.fireEvent(this.ON_SUSPEND, [doc, options]);
- 						// }.bind(this));
-						// poll.addEvent(poll.ON_RESUME, function(doc, options){
- 						// 	debug_events('poll.ON_RESUME %o', arguments);
- 						// 	this.fireEvent(this.ON_RESUME, [doc, options]);
- 						// }.bind(this));
+						poll.addEvent(poll.ON_SUSPEND, function(){
+ 							debug_events('poll.ON_SUSPEND %o', arguments);
+							this.removeEvent(this.ON_SUSPEND, __poll_suspend);
+
+ 							this.fireEvent(this.ON_SUSPEND, [arguments]);
+
+							this.addEvent(this.ON_SUSPEND, __poll_suspend);
+
+
+ 						}.bind(this));
+
+						poll.addEvent(poll.ON_RESUME, function(){
+ 							debug_events('poll.ON_RESUME %o', arguments);
+							this.removeEvent(this.ON_RESUME, __poll_resume);
+
+ 							this.fireEvent(this.ON_RESUME, [arguments]);
+
+							this.addEvent(this.ON_RESUME, __poll_resume);
+							
+
+ 						}.bind(this));
 
 						poll.addEvent(poll.ON_DOC, function(doc, options){
  							debug_events('poll.ON_DOC %o', arguments);
