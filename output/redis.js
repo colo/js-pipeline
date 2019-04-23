@@ -2,7 +2,7 @@
  * quick & dirty redis output (base on rethinkdb)
  * not tested or fully checked, just "works" as cache store.output
 * */
- 
+
 'use strict'
 
 const	mootools = require('mootools')
@@ -250,6 +250,8 @@ module.exports = new Class({
 	_save_docs: function(doc, index){
 		debug_internals('_save_docs %o %s %o', doc, index, this.options.insert);
 
+    if(!Array.isArray(doc)) doc = [doc]
+    
     let db = this.options.conn[index].db
     // let table = this.options.conn[index].table
     let conn = this.conns[index]
