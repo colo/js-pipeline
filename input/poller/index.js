@@ -233,7 +233,7 @@ module.exports = new Class({
  							this.fireEvent(this.ON_RESUME, [arguments]);
 
 							this.addEvent(this.ON_RESUME, __poll_resume);
-							
+
 
  						}.bind(this));
 
