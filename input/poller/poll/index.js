@@ -14,11 +14,17 @@ module.exports = new Class({
 	initialize: function(options){
 
 		debug('initialize %o', options);
-
-		let instance = new options.module(options);
-		options.module = instance
-		return instance
+		let instance = undefined
 		
+		if(options.instance){
+			instance = options.instance
+		}
+		else{
+			instance = new options.module(options);
+			options.module = instance
+		}
+		return instance
+
 		//switch(options.scheme) {
 				//case 'http':
 				//case 'https':
