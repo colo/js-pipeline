@@ -28,6 +28,8 @@ module.exports = new Class({
 	ON_ONCE_DOC: 'onOnceDoc',
 	ON_ONCE_DOC_ERROR: 'onOnceDocError',
 
+	ON_DOC_SAVED: 'onDocSaved',
+
 	ON_PERIODICAL_DOC: 'onPeriodicalDoc',
 	ON_PERIODICAL_DOC_ERROR: 'onPeriodicalDocError',
 
@@ -157,6 +159,8 @@ module.exports = new Class({
 						poll['ON_ONCE_DOC'] = this.ON_ONCE_DOC;
 						poll['ON_ONCE_DOC_ERROR'] = this.ON_ONCE_DOC_ERROR;
 
+						poll['ON_DOC_SAVED'] = this.ON_DOC_SAVED;
+
 						poll['ON_RANGE_DOC'] = this.ON_RANGE_DOC;
 						poll['ON_RANGE_DOC_ERROR'] = this.ON_RANGE_DOC_ERROR;
 
@@ -205,6 +209,15 @@ module.exports = new Class({
 								req = [req]
 
 							poll.fireEvent(poll.ON_RANGE, req);
+						}.bind(this));
+
+						this.addEvent(this.ON_DOC_SAVED, function(err, result){
+							debug_events('ON_DOC_SAVED', err, result);
+							// console.log('js-pipeline INPUT ON_RANGE', req)
+							// if(Array.isArray(req))
+							// 	req = [req]
+
+							poll.fireEvent(poll.ON_DOC_SAVED, [err, result]);
 						}.bind(this));
 
 						/**

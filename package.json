@@ -1,15 +1,19 @@
 {
+  "_args": [
+    [
+      "git+https://github.com/colo/js-pipeline.git",
+      "/home/colo/projects/node-mngr-worker"
+    ]
+  ],
   "_from": "git+https://github.com/colo/js-pipeline.git",
-  "_id": "js-pipeline@0.0.1",
+  "_id": "js-pipeline@git+https://github.com/colo/js-pipeline.git#60ed91cd372eefee69218e01ad13e5839de60f36",
   "_inBundle": false,
   "_integrity": "",
   "_location": "/js-pipeline",
   "_phantomChildren": {},
   "_requested": {
     "type": "git",
-    "raw": "js-pipeline@git+https://github.com/colo/js-pipeline.git",
-    "name": "js-pipeline",
-    "escapedName": "js-pipeline",
+    "raw": "git+https://github.com/colo/js-pipeline.git",
     "rawSpec": "git+https://github.com/colo/js-pipeline.git",
     "saveSpec": "git+https://github.com/colo/js-pipeline.git",
     "fetchSpec": "https://github.com/colo/js-pipeline.git",
@@ -19,7 +23,7 @@
     "/"
   ],
   "_resolved": "git+https://github.com/colo/js-pipeline.git#60ed91cd372eefee69218e01ad13e5839de60f36",
-  "_spec": "js-pipeline@git+https://github.com/colo/js-pipeline.git",
+  "_spec": "git+https://github.com/colo/js-pipeline.git",
   "_where": "/home/colo/projects/node-mngr-worker",
   "author": {
     "name": "Luciano Bueno"

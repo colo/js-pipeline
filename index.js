@@ -154,6 +154,12 @@ module.exports = new Class({
 			input.fireEvent(input.ON_ONCE, req);
 		});
 
+		this.addEvent(this.ON_DOC_SAVED, function(err, result){
+			// debug_internals('this.ON_DOC_SAVED', err, result)
+			input.fireEvent(input.ON_DOC_SAVED, [err, result]);
+		});
+
+
 		//input['ON_SAVE_DOC'] = this.ON_SAVE_DOC;
 		//input['ON_SAVE_MULTIPLE_DOCS'] = this.ON_SAVE_MULTIPLE_DOCS;
 
@@ -273,8 +279,13 @@ module.exports = new Class({
 					//output(JSON.encode(doc));
 					output(doc, opts);
 				}
+				// else if(output.save && typeof(output.save) == 'function'){
+				// 	//output(JSON.encode(doc));
+				// 	output.save(doc, opts);
+				// }
 				else{
-					output.fireEvent(output.ON_SAVE_DOC, doc, opts);
+					// output.fireEvent(output.ON_SAVE_DOC, doc, opts);
+					output.fireEvent(output.ON_SAVE_DOC, doc);
 				}
 			}.bind(this));
 
@@ -284,8 +295,13 @@ module.exports = new Class({
 					//output(JSON.encode(docs));
 					output(docs, opts);
 				}
+				// else if(output.save && typeof(output.save) == 'function'){
+				// 	//output(JSON.encode(doc));
+				// 	output.save(doc, opts);
+				// }
 				else{
-					output.fireEvent(output.ON_SAVE_MULTIPLE_DOCS, [docs], opts);
+					// output.fireEvent(output.ON_SAVE_MULTIPLE_DOCS, [docs], opts);
+					output.fireEvent(output.ON_SAVE_MULTIPLE_DOCS, [docs]);
 				}
 			}.bind(this));
 
