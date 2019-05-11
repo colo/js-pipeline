@@ -100,6 +100,18 @@ module.exports = new Class({
 
 
 	},
+	get_input_by_id(id){
+		let _input
+		Array.each(this.inputs, function(input, index){
+			if(input.options.id == id){
+				// debug_internals('get_input_by_id', input.options.id, id)
+				_input = input
+			}
+
+		})
+
+		return _input
+	},
 	__process_input: function(input){
 		let type = Object.keys(input)[0];
 		let result = undefined
