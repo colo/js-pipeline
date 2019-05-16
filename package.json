@@ -2,11 +2,11 @@
   "_args": [
     [
       "git+https://github.com/colo/js-pipeline.git",
-      "/home/colo/projects/node-mngr-worker"
+      "/home/colo/projects/mngr-ui-admin"
     ]
   ],
   "_from": "git+https://github.com/colo/js-pipeline.git",
-  "_id": "js-pipeline@git+https://github.com/colo/js-pipeline.git#60ed91cd372eefee69218e01ad13e5839de60f36",
+  "_id": "js-pipeline@git+https://github.com/colo/js-pipeline.git#0e9e4260d5f20af4d41bf5b009f03a57e22cfe0f",
   "_inBundle": false,
   "_integrity": "",
   "_location": "/js-pipeline",
@@ -22,9 +22,9 @@
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "git+https://github.com/colo/js-pipeline.git#60ed91cd372eefee69218e01ad13e5839de60f36",
+  "_resolved": "git+https://github.com/colo/js-pipeline.git#0e9e4260d5f20af4d41bf5b009f03a57e22cfe0f",
   "_spec": "git+https://github.com/colo/js-pipeline.git",
-  "_where": "/home/colo/projects/node-mngr-worker",
+  "_where": "/home/colo/projects/mngr-ui-admin",
   "author": {
     "name": "Luciano Bueno"
   },

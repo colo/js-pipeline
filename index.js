@@ -183,6 +183,27 @@ module.exports = new Class({
 			//this.fireEvent(this.ON_SAVE_MULTIPLE_DOCS, [docs]);
 		//}.bind(this));
 
+		if(input.ON_DOC_ERROR)
+			input.addEvent(input.ON_DOC_ERROR, function(err, resp){
+				debug_events('input.ON_DOC_ERROR %o', err, resp);
+
+				this.fireEvent(this.ON_DOC_ERROR, [err, resp]);
+			}.bind(this));
+
+		if(input.ON_ONCE_DOC_ERROR)
+			input.addEvent(input.ON_ONCE_DOC_ERROR, function(err, resp){
+				debug_events('input.ON_ONCE_DOC_ERROR %o', err, resp);
+
+				this.fireEvent(this.ON_ONCE_DOC_ERROR, [err, resp]);
+			}.bind(this));
+
+		if(input.ON_PERIODICAL_DOC_ERROR)
+			input.addEvent(input.ON_PERIODICAL_DOC_ERROR, function(err, resp){
+				debug_events('input.ON_PERIODICAL_DOC_ERROR %o', err, resp);
+
+				this.fireEvent(this.ON_PERIODICAL_DOC_ERROR, [err, resp]);
+			}.bind(this));
+
 		if(input.ON_DOC)
 			input.addEvent(input.ON_DOC, function(doc, opts){
 				debug_events('input.ON_DOC %o', doc);
@@ -203,6 +224,7 @@ module.exports = new Class({
 
 
 			}.bind(this));
+
 
 		if(input.ON_ONCE_DOC)
 			input.addEvent(input.ON_ONCE_DOC, function(doc, opts){
