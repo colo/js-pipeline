@@ -634,7 +634,11 @@ module.exports = new Class({
 			}
 		}.bind(this);
 
-		process.on('exit', (code) => stop);
+		if(process && process.on)
+			process.on('exit',  (code) => stop);
+
+		if(window && window.onbeforeunload)
+			window.onbeforeunload = (code) => stop
 
 		this.addEvent(this.ON_SUSPEND, function(){
 			this.options.suspended = true
@@ -978,7 +982,12 @@ module.exports = new Class({
 
 			var reconnect_stop = function(){clearInterval(reconnect_timer)}.bind(this);
 
-			process.on('exit', (code) => reconnect_stop);
+			// process.on('exit', (code) => reconnect_stop);
+			if(process && process.on)
+				process.on('exit',  (code) => reconnect_stop);
+
+			if(window && window.onbeforeunload)
+				window.onbeforeunload = (code) => reconnect_stop
 
 			//this.addEvent(this.ON_SUSPEND, reconnect_stop);
 
