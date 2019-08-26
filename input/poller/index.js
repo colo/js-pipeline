@@ -167,7 +167,7 @@ module.exports = new Class({
 						poll['ON_PERIODICAL_REQUESTS_UPDATED'] = this.ON_PERIODICAL_REQUESTS_UPDATED;
 
 						this.addEvent(this.ON_EXIT, function(req){
-							console.log('ON_EXIT %o', req);
+							debug_events('ON_EXIT %o', req);
 							if(Array.isArray(req))
 								req = [req]
 
