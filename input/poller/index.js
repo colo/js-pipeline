@@ -634,11 +634,12 @@ module.exports = new Class({
 			}
 		}.bind(this);
 
-		if(process && process.on)
+		if(process && process.on){
 			process.on('exit',  (code) => stop);
-
-		if(window && window.onbeforeunload)
+		}
+		else if(window && window.onbeforeunload){
 			window.onbeforeunload = (code) => stop
+		}
 
 		this.addEvent(this.ON_SUSPEND, function(){
 			this.options.suspended = true
