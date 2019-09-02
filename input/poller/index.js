@@ -984,11 +984,12 @@ module.exports = new Class({
 			var reconnect_stop = function(){clearInterval(reconnect_timer)}.bind(this);
 
 			// process.on('exit', (code) => reconnect_stop);
-			if(process && process.on)
+			if(process && process.on){
 				process.on('exit',  (code) => reconnect_stop);
-
-			if(window && window.onbeforeunload)
+			}
+			else if(window && window.onbeforeunload){
 				window.onbeforeunload = (code) => reconnect_stop
+			}
 
 			//this.addEvent(this.ON_SUSPEND, reconnect_stop);
 
