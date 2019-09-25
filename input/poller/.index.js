@@ -34,6 +34,8 @@ module.exports = new Class({
 	ON_RANGE_DOC: 'onRangeDoc',
 	ON_RANGE_DOC_ERROR: 'onRangeDocError',
 
+	ON_ONCE_REQUESTS_UPDATED: 'onOnceRequestsUpdated',
+	ON_RANGE_REQUESTS_UPDATED: 'onRangeRequestsUpdated',
 	ON_PERIODICAL_REQUESTS_UPDATED: 'onPeriodicalRequestsUpdated',
 
 	//ON_CONFIG_DOC: 'onConfigDoc',
@@ -90,7 +92,7 @@ module.exports = new Class({
 			debug_events('ON_EXIT');
 			if(process && process.exit && typeof process.exit == 'function')//process.exit works only nodejs, not in browsers
 				process.exit(0);
-				
+
 		}.bind(this));
 
 
@@ -153,6 +155,8 @@ module.exports = new Class({
 						poll['ON_RANGE_DOC'] = this.ON_RANGE_DOC;
 						poll['ON_RANGE_DOC_ERROR'] = this.ON_RANGE_DOC_ERROR;
 
+						poll['ON_ONCE_REQUESTS_UPDATED'] = this.ON_ONCE_REQUESTS_UPDATED;
+						poll['ON_RANGE_REQUESTS_UPDATED'] = this.ON_RANGE_REQUESTS_UPDATED;
 						poll['ON_PERIODICAL_REQUESTS_UPDATED'] = this.ON_PERIODICAL_REQUESTS_UPDATED;
 
 						this.addEvent(this.ON_ONCE, function(req){
@@ -199,6 +203,22 @@ module.exports = new Class({
 						poll.addEvent(poll.ON_RANGE_DOC_ERROR, function(doc, options){
 							debug_events('poll.ON_RANGE_DOC_ERROR %o', arguments);
 							this.fireEvent(this.ON_RANGE_DOC_ERROR, [doc, options]);
+						}.bind(this));
+
+						poll.addEvent(poll.ON_ONCE_REQUESTS_UPDATED, function(){
+								debug_internals('poll.ON_REQUESTS_UPDATED %o', poll.options.requests.once);
+								// let key = poll.options.id;
+
+								this._process_requests(poll, null, { once: poll.options.requests.once });
+
+						}.bind(this));
+
+						poll.addEvent(poll.ON_RANGE_REQUESTS_UPDATED, function(){
+								debug_internals('poll.ON_REQUESTS_UPDATED %o', poll.options.requests.range);
+								// let key = poll.options.id;
+
+								this._process_requests(poll, null, { range: poll.options.requests.range });
+
 						}.bind(this));
 
 						poll.addEvent(poll.ON_PERIODICAL_REQUESTS_UPDATED, function(){
@@ -253,6 +273,8 @@ module.exports = new Class({
 							app['ON_RANGE_DOC'] = this.ON_RANGE_DOC;
 							app['ON_RANGE_DOC_ERROR'] = this.ON_RANGE_DOC_ERROR;
 
+							app['ON_ONCE_REQUESTS_UPDATED'] = this.ON_ONCE_REQUESTS_UPDATED;
+							app['ON_RANGE_REQUESTS_UPDATED'] = this.ON_RANGE_REQUESTS_UPDATED;
 							app['ON_PERIODICAL_REQUESTS_UPDATED'] = this.ON_PERIODICAL_REQUESTS_UPDATED;
 
 							app['ON_ONCE'] = this.ON_ONCE;
@@ -273,6 +295,18 @@ module.exports = new Class({
 							/**
 							 * app can fire ON_ONCE and ON_RANGE events
 							 * */
+
+							app.addEvent(app.ON_ONCE_REQUESTS_UPDATED, function(){
+								debug_internals('app.ON_ONCE_REQUESTS_UPDATED %o', app.options.requests.once);
+
+								this._process_requests(poll, app, { once: app.options.requests.once } );
+							}.bind(this));
+
+							app.addEvent(app.ON_RANGE_REQUESTS_UPDATED, function(){
+								debug_internals('app.ON_RANGE_REQUESTS_UPDATED %o', app.options.requests.range);
+
+								this._process_requests(poll, app, { range: app.options.requests.range } );
+							}.bind(this));
 
 							app.addEvent(app.ON_PERIODICAL_REQUESTS_UPDATED, function(){
 									debug_internals('app.ON_PERIODICAL_REQUESTS_UPDATED %o', app.options.requests.periodical);
