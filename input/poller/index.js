@@ -300,7 +300,7 @@ module.exports = new Class({
 						poll.addEvent(poll.ON_ONCE_REQUESTS_UPDATED, function(){
 								debug_internals('poll.ON_REQUESTS_UPDATED %o', poll.options.requests.once);
 								// let key = poll.options.id;
-
+								poll.removeEvents(poll.ON_ONCE)
 								this._process_requests(poll, null, { once: poll.options.requests.once });
 
 						}.bind(this));
@@ -308,7 +308,7 @@ module.exports = new Class({
 						poll.addEvent(poll.ON_RANGE_REQUESTS_UPDATED, function(){
 								debug_internals('poll.ON_REQUESTS_UPDATED %o', poll.options.requests.range);
 								// let key = poll.options.id;
-
+								poll.removeEvents(poll.ON_RANGE)
 								this._process_requests(poll, null, { range: poll.options.requests.range });
 
 						}.bind(this));
@@ -413,13 +413,13 @@ module.exports = new Class({
 						 * */
 						 app.addEvent(app.ON_ONCE_REQUESTS_UPDATED, function(){
 							 debug_internals('app.ON_ONCE_REQUESTS_UPDATED %o', app.options.requests.once);
-
+							 poll.removeEvents(poll.ON_ONCE)
 							 this._process_requests(poll, app, { once: app.options.requests.once } );
 						 }.bind(this));
 
 						 app.addEvent(app.ON_RANGE_REQUESTS_UPDATED, function(){
 							 debug_internals('app.ON_RANGE_REQUESTS_UPDATED %o', app.options.requests.range);
-
+							 poll.removeEvents(poll.ON_RANGE)
 							 this._process_requests(poll, app, { range: app.options.requests.range } );
 						 }.bind(this));
 
@@ -575,8 +575,6 @@ module.exports = new Class({
 						if(this.options.suspended == false)
 							this.dispatch(null, app, app_req, type);
 
-						poll.removeEvents(poll.ON_ONCE)
-
 						poll.addEvent(poll.ON_ONCE, function(req){
 							debug_events('poll.ON_ONCE %o', req);
 							this.dispatch(req, app, app_req, type);
@@ -595,7 +593,6 @@ module.exports = new Class({
 						break;
 
 					case 'range':
-						poll.removeEvents(poll.ON_RANGE)
 
 						poll.addEvent(poll.ON_RANGE, function(req){
 							debug_events('poll.ON_RANGE %o', req);
