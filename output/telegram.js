@@ -189,8 +189,12 @@ module.exports = new Class({
 		debug_internals('save %o', doc);
 
 		if(this.options.buffer.size == 0){
-
-			this._save_to_tokens(doc)
+      // if((typeof(doc) == 'array' || doc instanceof Array || Array.isArray(doc)) && doc.length > 0){
+      //   this._save_to_tokens([doc])
+      // }
+      // else{
+        this._save_to_tokens(doc)
+      // }
 		}
 		// else if( this.buffer.length < this.options.buffer.size && this.buffer_expire > Date.now()){
 		// 	this.buffer.push(doc);
@@ -239,9 +243,15 @@ module.exports = new Class({
 		// let token = this.options.conn[index].token
     let telegram = this.conns[index].telegram
     let chatId = this.conns[index].chatId
-    debug_internals('_save_docs %o %s %o', doc, index, this.options.message, chatId);
+    if(!Array.isArray(doc)) doc = [doc]
 
-    telegram.sendMessage(chatId, doc, this.options.message).then((resp) => {debug_internals('_save_docs resp %o', resp)})
+    debug_internals('_save_docs %o %s %o', doc, index, this.options.message, chatId);
+    // process.exit(1)
+
+    Array.each(doc, function(message){
+      telegram.sendMessage(chatId, message, this.options.message).then((resp) => {debug_internals('_save_docs resp %o', resp)})
+    }.bind(this))
+
 
     // let table = this.options.conn[index].table
     // let conn = this.options.conn[index]
