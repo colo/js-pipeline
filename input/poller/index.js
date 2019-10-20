@@ -536,8 +536,11 @@ module.exports = new Class({
 					}
 
 					try{
-
-						if(this.options.connect_retry_count < 0 || this.err_poller_count[index] < this.options.connect_retry_count){
+						if(poll.connected){
+							debug_events('poll CONNECTED %o', poll.connected);
+							this._register_poller(index, poll)
+						}
+						else if(this.options.connect_retry_count < 0 || this.err_poller_count[index] < this.options.connect_retry_count){
 							//poll.os.api.get({uri: 'hostname'});
 							poll.connect();
 						}
