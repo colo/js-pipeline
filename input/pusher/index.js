@@ -1,12 +1,11 @@
 'use strict'
 
-var path = require('path'),
-		mootools = require('mootools'),
-		Push = require('./push');
+const path = require('path'),
+			Push = require('../index')
 
-var debug = require('debug')('Server:App:Pipeline:Input:Pusher');
-var debug_internals = require('debug')('Server:App:Pipeline:Input:Pusher:Internals');
-var debug_events = require('debug')('Server:App:Pipeline:Input:Pusher:Events');
+const debug = require('debug')('js-pipeline:Pusher'),
+			debug_internals = require('debug')('js-pipeline:Pusher:Internals'),
+			debug_events = require('debug')('js-pipeline:Pusher:Events')
 
 module.exports = new Class({
 	Implements: [Options, Events],

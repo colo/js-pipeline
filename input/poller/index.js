@@ -1,12 +1,12 @@
 'use strict'
 
-var path = require('path'),
-		mootools = require('mootools'),
-		Poll = require('./poll');
+const path = require('path'),
+		Poll = require('../index')
+		// mootools = require('mootools'),
 
-var debug = require('debug')('Server:App:Pipeline:Input:Poller');
-var debug_internals = require('debug')('Server:App:Pipeline:Input:Poller:Internals');
-var debug_events = require('debug')('Server:App:Pipeline:Input:Poller:Events');
+const debug = require('debug')('js-pipeline:Poller'),
+			debug_internals = require('debug')('js-pipeline:Poller:Internals'),
+			debug_events = require('debug')('js-pipeline:Poller:Events')
 
 module.exports = new Class({
 	Implements: [Options, Events],

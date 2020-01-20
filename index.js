@@ -5,9 +5,9 @@ const	mootools = require('mootools'),
 			Pusher = require('./input/pusher');
 			//CradleOutput = require('./output/cradle');
 
-var debug = require('debug')('Server:App:Pipeline');
-var debug_internals = require('debug')('Server:App:Pipeline:Internals');
-var debug_events = require('debug')('Server:App:Pipeline:Events');
+const debug = require('debug')('js-pipeline'),
+			debug_internals = require('debug')('js-pipeline:Internals'),
+			debug_events = require('debug')('js-pipeline:Events')
 
 module.exports = new Class({
   Implements: [Options, Events],

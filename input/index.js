@@ -7,7 +7,7 @@ const path = require('path');
 			//Munin = require('./munin'),
 			//Imap = require('./imap');
 
-var debug = require('debug')('Server:App:Pipeline:Input:Poller:Poll');
+var debug = require('debug')('js-pipeline:Input');
 
 module.exports = new Class({
 
@@ -15,7 +15,7 @@ module.exports = new Class({
 
 		debug('initialize %o', options);
 		let instance = undefined
-		
+
 		if(options.instance){
 			instance = options.instance
 		}
