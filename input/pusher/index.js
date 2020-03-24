@@ -14,20 +14,31 @@ module.exports = new Class({
 	ON_RESUME: 'onResume',
 	ON_EXIT: 'onExit',
 
+	ON_ONCE: 'onOnce',
+	ON_RANGE: 'onRange',
+
+
 	ON_CLIENT_CONNECT: 'onClientConnect',
 	ON_CLIENT_CONNECT_ERROR: 'onClientConnectError',
 
 	ON_DOC: 'onDoc',
 	ON_DOC_ERROR: 'onDocError',
 
-	//ON_ONCE_DOC: 'onOnceDoc',
-	//ON_ONCE_DOC_ERROR: 'onOnceDocError',
+	ON_ONCE_DOC: 'onOnceDoc',
+	ON_ONCE_DOC_ERROR: 'onOnceDocError',
 
-	//ON_PERIODICAL_DOC: 'onPeriodicalDoc',
-	//ON_PERIODICAL_DOC_ERROR: 'onPeriodicalDocError',
+	ON_DOC_SAVED: 'onDocSaved',
 
-	//ON_RANGE_DOC: 'onRangeDoc',
-	//ON_RANGE_DOC_ERROR: 'onRangeDocError',
+	ON_PERIODICAL_DOC: 'onPeriodicalDoc',
+	ON_PERIODICAL_DOC_ERROR: 'onPeriodicalDocError',
+
+	ON_RANGE_DOC: 'onRangeDoc',
+	ON_RANGE_DOC_ERROR: 'onRangeDocError',
+
+	// ON_ONCE_REQUESTS_UPDATED: 'onOnceRequestsUpdated',
+	// ON_RANGE_REQUESTS_UPDATED: 'onRangeRequestsUpdated',
+	// ON_PERIODICAL_REQUESTS_UPDATED: 'onPeriodicalRequestsUpdated',
+
 
 	pushers: {},
 	//connected pushers
@@ -106,8 +117,19 @@ module.exports = new Class({
 						push['ON_DOC'] = this.ON_DOC;
 						push['ON_DOC_ERROR'] = this.ON_DOC_ERROR;
 
-						//push['ON_ONCE'] = this.ON_ONCE;
-						//push['ON_RANGE'] = this.ON_RANGE;
+						push['ON_ONCE'] = this.ON_ONCE;
+						push['ON_RANGE'] = this.ON_RANGE;
+
+						push['ON_PERIODICAL_DOC'] = this.ON_PERIODICAL_DOC;
+						push['ON_PERIODICAL_DOC_ERROR'] = this.ON_PERIODICAL_DOC_ERROR;
+
+						push['ON_ONCE_DOC'] = this.ON_ONCE_DOC;
+						push['ON_ONCE_DOC_ERROR'] = this.ON_ONCE_DOC_ERROR;
+
+						push['ON_DOC_SAVED'] = this.ON_DOC_SAVED;
+
+						push['ON_RANGE_DOC'] = this.ON_RANGE_DOC;
+						push['ON_RANGE_DOC_ERROR'] = this.ON_RANGE_DOC_ERROR;
 
 						//this.addEvent(this.ON_ONCE, function(req){
 							//debug_events('ON_ONCE %o', req);
@@ -118,6 +140,48 @@ module.exports = new Class({
 							//debug_events('ON_RANGE %o', req);
 							//push.fireEvent(push.ON_RANGE, req);
 						//}.bind(this));
+						push.addEvent(push.ON_DOC, function(doc, options){
+ 							debug_events('push.ON_DOC %o', arguments);
+ 							this.fireEvent(this.ON_DOC, [doc, options]);
+ 						}.bind(this));
+
+ 						push.addEvent(push.ON_DOC_ERROR, function(doc, options){
+ 							debug_events('push.ON_DOC_ERROR %o', arguments);
+ 							this.fireEvent(this.ON_DOC_ERROR, [doc, options]);
+ 						}.bind(this));
+
+						push.addEvent(push.ON_ONCE_DOC, function(doc, options){
+							debug_events('push.ON_ONCE_DOC %o', arguments);
+							this.fireEvent(this.ON_ONCE_DOC, [doc, options]);
+						}.bind(this));
+
+						push.addEvent(push.ON_ONCE_DOC_ERROR, function(doc, options){
+							debug_events('push.ON_ONCE_DOC_ERROR %o', arguments);
+							this.fireEvent(this.ON_ONCE_DOC_ERROR, [doc, options]);
+						}.bind(this));
+
+						push.addEvent(push.ON_PERIODICAL_DOC, function(doc, options){
+							debug_events('push.ON_PERIODICAL_DOC %o', arguments);
+							this.fireEvent(this.ON_PERIODICAL_DOC, [doc, options]);
+
+						}.bind(this));
+
+						push.addEvent(push.ON_PERIODICAL_DOC_ERROR, function(doc, options){
+							debug_events('push.ON_PERIODICAL_DOC_ERROR %o', arguments);
+							this.fireEvent(this.ON_PERIODICAL_DOC_ERROR, [doc, options]);
+
+						}.bind(this));
+
+
+						push.addEvent(push.ON_RANGE_DOC, function(doc, options){
+							debug_events('push.ON_RANGE_DOC %o', arguments);
+							this.fireEvent(this.ON_RANGE_DOC, [doc, options]);
+						}.bind(this));
+
+						push.addEvent(push.ON_RANGE_DOC_ERROR, function(doc, options){
+							debug_events('push.ON_RANGE_DOC_ERROR %o', arguments);
+							this.fireEvent(this.ON_RANGE_DOC_ERROR, [doc, options]);
+						}.bind(this));
 
 
 						push.addEvent(push.ON_USE, function(mount, app){
@@ -126,14 +190,14 @@ module.exports = new Class({
 							app['ON_DOC'] = this.ON_DOC;
 							app['ON_DOC_ERROR'] = this.ON_DOC_ERROR;
 
-							//app['ON_ONCE_DOC'] = this.ON_ONCE_DOC;
-							//app['ON_ONCE_DOC_ERROR'] = this.ON_ONCE_DOC_ERROR;
+							app['ON_ONCE_DOC'] = this.ON_ONCE_DOC;
+							app['ON_ONCE_DOC_ERROR'] = this.ON_ONCE_DOC_ERROR;
 
-							//app['ON_PERIODICAL_DOC'] = this.ON_PERIODICAL_DOC;
-							//app['ON_PERIODICAL_DOC_ERROR'] = this.ON_PERIODICAL_DOC_ERROR;
+							app['ON_PERIODICAL_DOC'] = this.ON_PERIODICAL_DOC;
+							app['ON_PERIODICAL_DOC_ERROR'] = this.ON_PERIODICAL_DOC_ERROR;
 
-							//app['ON_RANGE_DOC'] = this.ON_RANGE_DOC;
-							//app['ON_RANGE_DOC_ERROR'] = this.ON_RANGE_DOC_ERROR;
+							app['ON_RANGE_DOC'] = this.ON_RANGE_DOC;
+							app['ON_RANGE_DOC_ERROR'] = this.ON_RANGE_DOC_ERROR;
 
 
 							app.addEvent(this.ON_DOC, function(doc){
@@ -146,111 +210,20 @@ module.exports = new Class({
 								this.fireEvent(this.ON_DOC_ERROR, [err, {type: 'push', input_type: push, app: app}]);
 							}.bind(this));
 
-							//app.addEvent(this.ON_ONCE_DOC, function(doc){
-								//debug_events('app.ON_ONCE_DOC %o', doc);
-								//this.fireEvent(this.ON_ONCE_DOC, [doc, {type: 'once', input_type: push, app: app}]);
-							//}.bind(this));
+							app.addEvent(this.ON_ONCE_DOC, function(doc){
+								debug_events('app.ON_ONCE_DOC %o', doc);
+								this.fireEvent(this.ON_ONCE_DOC, [doc, {type: 'once', input_type: push, app: app}]);
+							}.bind(this));
 
-							//app.addEvent(this.ON_PERIODICAL_DOC, function(doc){
-								//debug_events('app.ON_PERIODICAL_DOC %o', doc);
-								//this.fireEvent(this.ON_PERIODICAL_DOC, [doc, {type: 'periodical', input_type: push, app: app}]);
-							//}.bind(this));
+							app.addEvent(this.ON_PERIODICAL_DOC, function(doc){
+								debug_events('app.ON_PERIODICAL_DOC %o', doc);
+								this.fireEvent(this.ON_PERIODICAL_DOC, [doc, {type: 'periodical', input_type: push, app: app}]);
+							}.bind(this));
 
-							//app.addEvent(this.ON_RANGE_DOC, function(doc){
-								//debug_events('app.ON_RANGE_DOC %o', doc);
-								//this.fireEvent(this.ON_RANGE_DOC, [doc, {type: 'range', input_type: push, app: app}]);
-							//}.bind(this));
-
-							//if(app.options.requests){
-								//Object.each(app.options.requests, function(requests, type){
-									//debug_internals('requests %o', requests);
-									//debug_internals('requests type %s', type);
-
-									//Array.each(requests, function(app_req){
-
-										//debug_internals('single req %o', app_req);
-
-										//switch(type){
-											//case 'once':
-												//this.dispatch(null, app, app_req, type);
-
-												//push.addEvent(push.ON_ONCE, function(req){
-													//debug_events('push.ON_ONCE %o', req);
-													//this.dispatch(req, app, app_req, type);
-												//}.bind(this));
-
-												//push.addEvent(push.ON_CONNECT, function(req){
-													//debug_events('push.ON_CONNECT %o', req);
-													//this.dispatch(null, app, app_req, type);
-												//}.bind(this));
-
-												//break;
-
-											//case 'periodical':
-												//var periodical_timer = null;
-
-												//var start = function(){
-													//if(!periodical_timer || !periodical_timer._repeat){
-
-														//periodical_timer = this.dispatch.periodical(
-															//this.options.requests.periodical,
-															//this,
-															//[null, app, app_req, type]
-														//);
-													//}
-												//}.bind(this);
-
-												//var stop = function(){
-
-													//if(periodical_timer._repeat){
-														//clearInterval(periodical_timer);
-													//}
-
-												//}.bind(this);
-
-												//process.on('exit', (code) => stop);
-
-												//this.addEvent(this.ON_SUSPEND, function(){
-													//debug_events('ON_SUSPEND');
-													//stop();
-												//});
-
-												//push.addEvent(push.ON_CONNECT_ERROR, function(){
-													//debug_events('push.ON_CONNECT_ERROR');
-													//stop();
-												//});
-
-												//this.addEvent(this.ON_RESUME, function(){
-													//debug_events('ON_RESUME');
-													//start();
-												//});
-
-												//push.addEvent(push.ON_CONNECT, function(){
-													//debug_events('push.ON_CONNECT');
-													//start();
-												//});
-
-												//start();
-
-												//break;
-
-											//case 'range':
-												//push.addEvent(push.ON_RANGE, function(req){
-													//debug_events('push.ON_RANGE %o', req);
-													//this.dispatch_range(req, app, app_req, type);
-												//}.bind(this));
-												//break;
-
-										//}
-
-									//}.bind(this));
-
-
-								//}.bind(this));
-
-
-
-							//}//if
+							app.addEvent(this.ON_RANGE_DOC, function(doc){
+								debug_events('app.ON_RANGE_DOC %o', doc);
+								this.fireEvent(this.ON_RANGE_DOC, [doc, {type: 'range', input_type: push, app: app}]);
+							}.bind(this));
 
 						}.bind(this));
 
