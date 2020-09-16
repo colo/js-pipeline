@@ -48,7 +48,7 @@ module.exports = new Class({
 
 	pollers: {},
 	//connected pollers
-	conn_pollers: {},
+	conn_pollers: [],
 
 	//pollers that couldn't connect
 	err_pollers: {},
@@ -1042,8 +1042,10 @@ module.exports = new Class({
 			reconnect(err_poller);
 		}
 
-		if(this.conn_pollers)
-			delete this.conn_pollers[index];
+		// if(this.conn_pollers)
+		// 	delete this.conn_pollers[index];
+		this.conn_pollers[index] = null
+		this.conn_pollers = this.conn_pollers.clean()
 
 		debug_internals('_register_error %o', poll);
 
